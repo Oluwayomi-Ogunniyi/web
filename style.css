@@ -771,7 +771,8 @@ nav ul {
   }
 
   .logo-image {
-    height: 60px;
+    height: 100px;
+    width: auto;
   }
 
   nav ul {
@@ -817,12 +818,13 @@ nav ul {
 @media (max-width: 768px) {
   header {
     padding: 0.5rem;
-    height: 50px;
+    height: 80px;
   }
 
   .logo-image {
-    height: 80px;
+    height: 100px;
     padding-top: 20px;
+    width: auto;
   }
 
   nav ul {
@@ -868,12 +870,13 @@ nav ul {
 @media (max-width: 480px) {
   header {
     padding: 0.5rem;
-    height: 70px;
+    height: 80px;
   }
 
   .logo-image {
     height: 100px;
     padding-top: 20px;
+    width: auto;
   }
 
   nav ul {
