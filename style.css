@@ -608,6 +608,12 @@ Responsive Design (Mobile & Tablet)
     width: 80px;
     height: 80px;
   }
+  @media screen and (max-width: 768px) {
+  .more-info {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
 
   .Testimonial-wrapper {
     padding: 10px;
@@ -921,3 +927,34 @@ nav ul {
     display: none;
   }
 
+.hero-content,
+.about-hero,
+.service-box {
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+@media screen and (max-width: 768px) {
+  .more-info {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+/* Prevent text/content overflow on small screens */
+* {
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Ensure containers are responsive */
+.container, .service-container, .Testimonial-wrapper, .hero-content, .about-hero {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Handle long unbreakable content gracefully */
+body, html {
+  max-width: 100vw;
+  overflow-x: hidden;
+}

@@ -438,6 +438,25 @@
         font-size: 2.2rem;
       }
     }
+    /* Prevent text/content overflow on small screens */
+* {
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Ensure containers are responsive */
+.container, .service-container, .Testimonial-wrapper, .hero-content, .about-hero {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Handle long unbreakable content gracefully */
+body, html {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
   </style>
 </head>
 
