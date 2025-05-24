@@ -972,7 +972,7 @@ body, html {
   font-size: 24px;
   padding: 10px;
   padding-bottom: 40px;
-  color: rgb(0, 94, 86);
+  color: lch(35.36% 25.95 184.93);
 }
 
 /* Mobile Menu */
@@ -1093,7 +1093,3 @@ body, html {
   }
 }
 
-.hamburger,
-.mobile-menu {
-  display: none;
-}
