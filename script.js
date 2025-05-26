@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
     // DROPDOWN LOGIC
     const dropdowns = document.querySelectorAll(".dropdown");
@@ -30,12 +31,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.addEventListener("click", () => {
-    dropdowns.forEach(dropdown => {
-      dropdown.querySelector(".dropdown-menu")?.classList.remove("show");
-      const arrow = dropdown.querySelector(".arrow");
-      if (arrow) arrow.textContent = "▾";
+        dropdowns.forEach(dropdown => {
+            dropdown.querySelector(".dropdown-menu")?.classList.remove("show");
+            const arrow = dropdown.querySelector(".arrow");
+            if (arrow) arrow.textContent = "▾";
+        });
     });
-  });
 
     // GET STARTED MODAL LOGIC
     const getStartedModal = document.getElementById("getStartedModal");
@@ -43,22 +44,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeBtn = getStartedModal?.querySelector(".close-button");
 
     if (getStartedModal && openBtn && closeBtn) {
-        // Open the modal with the Get Started form
         openBtn.addEventListener("click", () => {
-            // Ensure we always load the original content of the Get Started form
             const originalForm = document.getElementById("original-modal-form-content");
             const modalContent = document.querySelector(".modal-content");
 
             if (originalForm && modalContent) {
-                // Inject the original form content
                 modalContent.innerHTML = originalForm.innerHTML;
 
-                // Rebind the close button event
                 modalContent.querySelector(".close-button").addEventListener("click", () => {
                     getStartedModal.style.display = "none";
                 });
 
-                // Rebind form submission logic
                 const form = modalContent.querySelector("#get-started-form");
                 if (form) {
                     form.addEventListener("submit", function (e) {
@@ -74,12 +70,10 @@ document.addEventListener("DOMContentLoaded", () => {
             getStartedModal.style.display = "block";
         });
 
-        // Close the modal
         closeBtn.addEventListener("click", () => {
             getStartedModal.style.display = "none";
         });
 
-        // Close modal if click outside
         window.addEventListener("click", (e) => {
             if (e.target === getStartedModal) {
                 getStartedModal.style.display = "none";
@@ -108,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const infoKey = button.getAttribute("data-info");
                 const contentText = infoMap[infoKey] || "No additional information available.";
 
-                // Inject More Info content
                 modalContent.innerHTML = `
                     <span class="close-button">&times;</span>
                     <h2>More Information</h2>
@@ -117,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 getStartedModal.style.display = "block";
 
-                // Rebind the close button for More Info modal
                 modalContent.querySelector(".close-button").addEventListener("click", () => {
                     getStartedModal.style.display = "none";
                 });
@@ -125,44 +117,44 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-});
-
-
-document.addEventListener('DOMContentLoaded', function () {
-    const hamburger = document.getElementById('hamburger');
-    const closeMenu = document.getElementById('closeMenu');
-    const mobileMenu = document.getElementById('mobileMenu');
+    // HAMBURGER MENU LOGIC
+    const hamburger = document.getElementById("hamburger");
+    const closeIcon = document.getElementById("closeIcon"); // Make sure your HTML includes this
+    const mobileMenu = document.getElementById("mobileMenu");
     const dropdownToggles = mobileMenu.querySelectorAll('.dropdown-toggle');
     const getStartedBtnMobile = document.getElementById('getStartedBtnMobile');
-    const getStartedModal = document.getElementById('getStartedModal');
     const feedbackLinkMobile = document.getElementById('feedback-link-mobile');
     const feedbackModal = document.getElementById('feedbackModal');
 
-    // Toggle mobile menu on hamburger click
-    hamburger.addEventListener('click', function () {
+    function openMobileMenu() {
         mobileMenu.classList.add('open');
         hamburger.style.display = 'none';
-        closeMenu.style.display = 'block';
-    });
+        if (closeIcon) closeIcon.style.display = 'block';
+    }
 
-    // Close menu on close icon click
-    closeMenu.addEventListener('click', function () {
+    function closeMobileMenu() {
         mobileMenu.classList.remove('open');
-        closeMenu.style.display = 'none';
         hamburger.style.display = 'block';
-    });
+        if (closeIcon) closeIcon.style.display = 'none';
+
+        // Close any open dropdowns inside menu
+        mobileMenu.querySelectorAll('.dropdown').forEach(dropdown => dropdown.classList.remove('open'));
+    }
+
+    hamburger.addEventListener('click', openMobileMenu);
+    if (closeIcon) {
+        closeIcon.addEventListener('click', closeMobileMenu);
+    }
 
     // Close menus when clicking outside
     document.addEventListener('click', function (e) {
-        if (!mobileMenu.contains(e.target) && !hamburger.contains(e.target) && !closeMenu.contains(e.target)) {
-            mobileMenu.classList.remove('open');
-            closeMenu.style.display = 'none';
-            hamburger.style.display = 'block';
+        if (!mobileMenu.contains(e.target) && !hamburger.contains(e.target) && (!closeIcon || !closeIcon.contains(e.target))) {
+            closeMobileMenu();
         }
     });
 
-    // Dropdown toggle logic
-    dropdownToggles.forEach(function (toggle) {
+    // Toggle dropdowns inside mobile
+    dropdownToggles.forEach(toggle => {
         toggle.addEventListener('click', function (e) {
             e.preventDefault();
             const parent = this.parentElement;
@@ -170,24 +162,21 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Get Started Modal
+    // Get Started Modal (Mobile)
     getStartedBtnMobile.addEventListener('click', function () {
         getStartedModal.style.display = 'block';
     });
 
-    // Feedback Modal
+    // Feedback Modal (Mobile)
     feedbackLinkMobile.addEventListener('click', function (e) {
         e.preventDefault();
         feedbackModal.style.display = 'block';
     });
 
-    // Close modals when clicking outside
+    // Close modals on click outside
     window.addEventListener('click', function (e) {
-        if (e.target === getStartedModal) {
-            getStartedModal.style.display = 'none';
-        }
-        if (e.target === feedbackModal) {
-            feedbackModal.style.display = 'none';
-        }
+        if (e.target === getStartedModal) getStartedModal.style.display = 'none';
+        if (e.target === feedbackModal) feedbackModal.style.display = 'none';
     });
-    });
+});
+
