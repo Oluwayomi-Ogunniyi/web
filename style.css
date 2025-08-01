@@ -934,6 +934,23 @@ Responsive Design (Consolidated)
         z-index: 1001;
     }
 
+        /* Show hamburger only on tablets & smaller screens */
+    @media (max-width: 1024px) {
+    .hamburger {
+        display: block;
+    }
+    nav {
+        display: none; /* Hide desktop nav on small screens */
+    }
+    }
+
+    /* Force hide hamburger on larger screens if needed */
+    @media (min-width: 1025px) {
+    .hamburger {
+        display: none !important;
+    }
+    }
+
     .close-menu {
         display: block;
         position: absolute;
@@ -1267,3 +1284,14 @@ Additional Styles
     overflow-wrap: break-word;
 }
 
+a li {
+  text-decoration: none;
+}
+
+.tools a li {
+  text-decoration: none;
+}
+
+a {
+  text-decoration: none;
+}
