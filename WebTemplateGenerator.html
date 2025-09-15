@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Website Template Generator - Create custom website templates for your business." />
+  <title>Website Template Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #002e22;
+      color: #115e57;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: hsl(165, 94%, 87%);
+      color: #002e22;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .header-logo img {
+      height: 70px;
+      width: auto;
+    }
+
+    .header-title {
+      font-size: 1.7em;
+      margin: 0;
+      flex-grow: 1;
+      text-align: center;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-nav a {
+      color: #e5fcfb;
+      text-decoration: none;
+      margin-left: 15px;
+      font-size: 1.2em;
+    }
+
+    .back-icon {
+      position: static;
+      padding: 10px 12px;
+      background-color: #00412d;
+      color: #e0fdf8;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, background-color 0.3s;
+    }
+
+    .back-icon:hover {
+      transform: scale(1.1);
+      background-color: #007f66;
+    }
+
+    .home-icon {
+      position: static;
+      padding: 10px 12px;
+      background-color: #00412d;
+      color: #e0fdf8;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, background-color 0.3s;
+    }
+
+    .home-icon:hover {
+      transform: scale(1.1);
+      background-color: #007f66;
+    }
+
+    .home-icon i, .back-icon i {
+      margin: 0;
+    }
+
+    .template-generator {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 20px 0;
+      margin-top: 100px;
+      flex: 1 0 auto;
+    }
+
+    .generator-content {
+      max-width: 800px;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      color: #e5fcfb;
+    }
+
+    .generator-content h2 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .generator-content p {
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9em;
+      margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      max-width: 250px;
+      padding: 8px;
+      border: 1px solid #007f66;
+      border-radius: 4px;
+      background-color: #e0fdf8;
+      color: #00412d;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .generate-button {
+      background-color: hsl(175, 100%, 13%);
+      color: #e0fdf8;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color 0.3s;
+    }
+
+    .generate-button:hover {
+      background-color: #007f66;
+    }
+
+    .rolling-ball {
+      display: none;
+      width: 20px;
+      height: 20px;
+      background-color: #e0fdf8;
+      border-radius: 50%;
+      position: absolute;
+      animation: roll 1s infinite linear;
+    }
+
+    @keyframes roll {
+      0% { transform: translateX(0) rotate(0deg); }
+      100% { transform: translateX(100px) rotate(360deg); }
+    }
+
+    .template-preview {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #00412d;
+      border-radius: 8px;
+      color: #e0fdf8;
+      position: relative;
+    }
+
+    .proceed-button {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background-color: hsl(175, 100%, 13%);
+      color: #e0fdf8;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color 0.3s;
+    }
+
+    .proceed-button:hover {
+      background-color: #007f66;
+    }
+
+    .details-popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-content {
+      background-color: #00412d;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+      text-align: center;
+      color: #e5fcfb;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #e0fdf8;
+    }
+
+    .close-btn:hover {
+      color: #ff4d4d;
+    }
+
+    footer {
+      background-color: #222;
+      color: #e5fcfb;
+      text-align: center;
+      padding: 10px;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .generator-content {
+        padding: 10px;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        max-width: 200px;
+      }
+
+      .header-title {
+        font-size: 1.2em;
+      }
+
+      .header-logo img {
+        height: 60px;
+      }
+
+      .header-nav a {
+        font-size: 1.2em;
+      }
+
+      .proceed-button {
+        position: static;
+        margin-top: 10px;
+        width: 100%;
+      }
+
+      .popup-content {
+        width: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <noscript>
+    <div style="background: #fff3cd; padding: 1em; text-align: center; font-size: 0.95em;">
+      <strong>Notice:</strong> This site requires JavaScript for full functionality. Please enable it in your browser.
+    </div>
+  </noscript>
+
+  <header>
+    <div class="header-logo">
+      <img src="images/The Qlip.png" alt="The Qlip" class="logo-image" />
+    </div>
+    <h1 class="header-title">Website Template Guide</h1>
+    <div class="header-nav">
+      <a href="javascript:history.back()" title="Back" class="back-icon"><i class="fas fa-arrow-left"></i></a>
+      <a href="index.html" class="home-icon" aria-label="Back to Home"><i class="fas fa-home"></i></a>
+    </div>
+  </header>
+
+  <section class="template-generator">
+    <div class="generator-content">
+      <h2>Create Your Custom Website Template</h2>
+      <p>Enter your business type to generate a tailored website template based on the top designs.</p>
+      <form id="template-form">
+        <div class="form-group">
+          <label for="business-type">Business Type <span style="color: #ff4d4d;">*</span></label>
+          <input type="text" id="business-type" name="business-type" placeholder="e.g., Restaurant, Tech Startup" required>
+        </div>
+        <button type="submit" class="generate-button">Generate Template</button>
+      </form>
+      <div id="rolling-ball" class="rolling-ball"></div>
+      <div id="template-preview" class="template-preview"></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 The Qlip. All rights reserved.</p>
+  </footer>
+
+  <!-- Details Popup -->
+  <div id="details-popup" class="details-popup">
+    <div class="popup-content">
+      <span class="close-btn">&times;</span>
+      <h3>Provide Business Details</h3>
+      <form id="details-form">
+        <div class="form-group">
+          <label for="business-name">Business Name <span style="color: #ff4d4d;">*</span></label>
+          <input type="text" id="business-name" name="user_name" placeholder="Enter your business name" required>
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" name="message" placeholder="Describe your business..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="contact-email">Contact Email <span style="color: #ff4d4d;">*</span></label>
+          <input type="email" id="contact-email" name="user_email" placeholder="Enter email" required>
+        </div>
+        <input type="hidden" name="business_type" id="business-type-hidden" value="">
+        <button type="submit" class="generate-button">Submit to Contact Centre</button>
+      </form>
+    </div>
+  </div>
+  <!-- Start of HubSpot Embed Code -->
+  <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/146798384.js"></script>
+  <!-- End of HubSpot Embed Code -->
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    // Initialize EmailJS with your user ID
+    emailjs.init("DVlpv6WkJuRl2RWLZ");
+
+    document.getElementById('template-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const businessType = document.getElementById('business-type').value.trim();
+      if (!businessType) return;
+
+      const rollingBall = document.getElementById('rolling-ball');
+      const templatePreview = document.getElementById('template-preview');
+      rollingBall.style.display = 'block';
+      templatePreview.style.display = 'none';
+
+      // Simulate searching with a delay
+      setTimeout(() => {
+        rollingBall.style.display = 'none';
+        templatePreview.style.display = 'block';
+
+        // Generate a basic template based on business type
+        let templateContent = `<h3>Website Template for ${businessType}</h3>`;
+        templateContent += '<p>Welcome to your custom website! This template is designed to showcase your business effectively.</p>';
+        templateContent += '<ul>';
+        templateContent += '<li><strong>Home</strong> - Highlight your business overview.</li>';
+        templateContent += '<li><strong>About</strong> - Share your story and mission.</li>';
+        templateContent += '<li><strong>Services</strong> - List your offerings.</li>';
+        templateContent += '<li><strong>Contact</strong> - Provide contact details.</li>';
+        templateContent += '</ul>';
+
+        // Add business-specific styling or sections (simplified examples)
+        if (businessType.toLowerCase().includes('restaurant')) {
+          templateContent += '<p><strong>Special Menu</strong> - Feature your signature dishes here.</p>';
+        } else if (businessType.toLowerCase().includes('tech')) {
+          templateContent += '<p><strong>Tech Solutions</strong> - Showcase your latest innovations.</p>';
+        }
+
+        templatePreview.innerHTML = templateContent + '<button class="proceed-button">Proceed</button>';
+      }, 2000); // 2-second delay to simulate search
+    });
+
+    // Handle Proceed Button Click and EmailJS Submission
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('proceed-button')) {
+        const detailsPopup = document.getElementById('details-popup');
+        detailsPopup.style.display = 'flex';
+
+        // Close popup
+        document.querySelector('.close-btn').addEventListener('click', () => {
+          detailsPopup.style.display = 'none';
+        });
+
+        // Handle form submission with EmailJS
+        document.getElementById('details-form').addEventListener('submit', function(e) {
+          e.preventDefault();
+          // Set the hidden business_type value
+          document.getElementById('business-type-hidden').value = document.getElementById('business-type').value;
+
+          // Send form data via EmailJS
+          emailjs.sendForm('service_grblnof', 'template_vw26jo9', this)
+            .then(function() {
+              alert('Business details submitted successfully!');
+              document.getElementById('details-form').reset();
+              detailsPopup.style.display = 'none';
+            }, function(error) {
+              alert('Failed to submit business details.');
+              console.error(error);
+            });
+        });
+      }
+    });
+  </script>
+</body>
+</html>
