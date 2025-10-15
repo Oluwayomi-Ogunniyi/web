@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="The Qlip Carpenter’s Smart Tools - Measurement Converter, Wood Recommender, and Material Estimator for artisans.">
+    <title>Furniture Smart Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* Global Styles - Adjusted for consistency */
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: #002e22;
+            color: #115e57;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: hsl(165, 94%, 87%);
+            color: #002e22;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header-logo img {
+            height: 70px;
+            width: auto;
+        }
+
+        .header-title {
+            font-size: 1.7em;
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-nav a {
+            color: #e5fcfb;
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 1.2em;
+        }
+
+        .back-icon {
+            position: static;
+            padding: 10px 12px;
+            background-color: #00412d;
+            color: #e0fdf8;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .back-icon:hover {
+            transform: scale(1.1);
+            background-color: #007f66;
+        }
+
+        .home-icon {
+            position: static;
+            padding: 10px 12px;
+            background-color: #00412d;
+            color: #e0fdf8;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .home-icon:hover {
+            transform: scale(1.1);
+            background-color: #007f66;
+        }
+
+        .home-icon i, .back-icon i {
+            margin: 0;
+        }
+
+        /* Main Content Section */
+        main {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin-top: 100px; /* Increased buffer: header height + extra padding */
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tool-card {
+            background: lch(90.49% 39.21 175.05);
+            border-radius: 15px;
+            padding: 8px; /* Reduced padding for more compact cards */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: 0.3s ease;
+            margin-top: 40%;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            color: #002e22;
+            margin: 5px 0; /* Reduced margin for compactness */
+        }
+
+        input, select, button {
+            width: 85%;
+            padding: 6px; /* Slightly reduced for compactness */
+            margin: 4px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: hwb(0 100% 0%);
+            color: #002e22;
+            border: 1px solid #002e22;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #002e22;
+            color: hsl(165, 94%, 87%);
+        }
+
+        .more-info {
+            color: #002e22;
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 4px; /* Reduced margin */
+        }
+
+        .more-info:hover, .more-info:focus {
+            color: #002e22;
+            background: none;
+            text-decoration: underline;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: hwb(0 97% 3%);
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            color: #002e22;
+        }
+
+        .close {
+            position: absolute;
+            top: 8px; right: 12px;
+            font-size: 1.3rem;
+            color: #002e22;
+            cursor: pointer;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: #222;
+            color: #e5fcfb;
+            text-align: center;
+            padding: 10px;
+            margin-top: auto;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            main {
+                grid-template-columns: 1fr;
+                padding: 10px;
+                margin-top: 110px; /* Adjusted for mobile with extra buffer */
+            }
+
+            header {
+                height: 80px; /* Slightly reduced on mobile */
+            }
+
+            .header-logo img {
+                height: 60px;
+            }
+
+            .header-title {
+                font-size: 1.2em;
+            }
+
+            .header-nav a {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <noscript>
+        <div style="background: #fff3cd; padding: 1em; text-align: center; font-size: 0.95em;">
+            <strong>Notice:</strong> This site requires JavaScript for full functionality. Please enable it in your browser.
+        </div>
+    </noscript>
+
+    <header>
+        <div class="header-logo">
+            <img src="images/The Qlip.png" alt="The Qlip" class="logo-image" />
+        </div>
+        <h1 class="header-title">Furniture Smart Tools</h1>
+        <div class="header-nav">
+            <a href="javascript:history.back()" title="Back" class="back-icon"><i class="fas fa-arrow-left"></i></a>
+            <a href="index.html" class="home-icon" aria-label="Back to Home"><i class="fas fa-home"></i></a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Measurement Converter -->
+        <div class="tool-card">
+            <h2>📏 Measurement Converter</h2>
+            <select id="convertType">
+                <option value="inToCm">Inches ➜ Centimeters</option>
+                <option value="cmToIn">Centimeters ➜ Inches</option>
+                <option value="ftToM">Feet ➜ Meters</option>
+                <option value="mToFt">Meters ➜ Feet</option>
+                <option value="ydToM">Yards ➜ Meters</option>
+                <option value="mToYd">Meters ➜ Yards</option>
+                <option value="mmToIn">Millimeters ➜ Inches</option>
+                <option value="inToMm">Inches ➜ Millimeters</option>
+            </select>
+            <input type="number" id="measurementValue" placeholder="Enter value">
+            <button onclick="convertMeasurement()">Convert</button>
+            <p id="measurementResult"></p>
+            <button class="more-info" onclick="showInfo('converterInfo')">More Info</button>
+        </div>
+
+        <!-- Wood Type Recommender -->
+        <div class="tool-card">
+            <h2>🌲 Wood Type Recommender</h2>
+            <select id="projectType">
+                <option value="">Select Project Type</option>
+                <option value="furniture">Furniture (Tables, Chairs, Beds)</option>
+                <option value="outdoor">Outdoor Decking or Benches</option>
+                <option value="cabinet">Cabinets or Shelving</option>
+                <option value="frame">Door or Window Frames</option>
+                <option value="flooring">Flooring</option>
+                <option value="roofing">Roof Structures</option>
+                <option value="boat">Boat or Marine Work</option>
+                <option value="carving">Wood Carving / Sculpting</option>
+                <option value="kitchen">Kitchen Counters / Fittings</option>
+                <option value="lightwork">Light Decorative Works</option>
+            </select>
+            <button onclick="recommendWood()">Recommend</button>
+            <p id="woodResult"></p>
+            <button class="more-info" onclick="showInfo('woodInfo')">More Info</button>
+        </div>
+
+        <!-- Material Estimator -->
+        <div class="tool-card">
+            <h2>📐 Material Estimator</h2>
+            <input type="number" id="length" placeholder="Enter length (ft)">
+            <input type="number" id="width" placeholder="Enter width (ft)">
+            <button onclick="calculateArea()">Estimate</button>
+            <p id="areaResult"></p>
+            <button class="more-info" onclick="showInfo('materialInfo')">More Info</button>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div id="converterInfo" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('converterInfo')">&times;</span>
+            <h3>About Measurement Converter</h3>
+            <p>This tool helps convert between inches, feet, meters, and more — allowing artisans to get precise conversions instantly when cutting, scaling, or adjusting measurements for wood projects.</p>
+        </div>
+    </div>
+
+    <div id="woodInfo" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('woodInfo')">&times;</span>
+            <h3>About Wood Type Recommender</h3>
+            <p>Select your project type, and the system suggests the most suitable wood based on durability, weight, resistance to weather, ease of finishing, and purpose. It’s like having a professional carpenter’s advice in your pocket.</p>
+        </div>
+    </div>
+
+    <div id="materialInfo" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('materialInfo')">&times;</span>
+            <h3>About Material Estimator</h3>
+            <p>This tool helps you determine the amount of material (in square feet) required for a project — ensuring accurate budgeting, reduced waste, and better material planning.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 The Qlip. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Measurement Converter
+        function convertMeasurement() {
+            const type = document.getElementById('convertType').value;
+            const value = parseFloat(document.getElementById('measurementValue').value) || 0;
+            let result = 0;
+            let text = '';
+
+            switch (type) {
+                case 'inToCm': result = value * 2.54; text = `${value} inches = ${result.toFixed(2)} cm`; break;
+                case 'cmToIn': result = value / 2.54; text = `${value} cm = ${result.toFixed(2)} inches`; break;
+                case 'ftToM': result = value * 0.3048; text = `${value} ft = ${result.toFixed(2)} m`; break;
+                case 'mToFt': result = value / 0.3048; text = `${value} m = ${result.toFixed(2)} ft`; break;
+                case 'ydToM': result = value * 0.9144; text = `${value} yd = ${result.toFixed(2)} m`; break;
+                case 'mToYd': result = value / 0.9144; text = `${value} m = ${result.toFixed(2)} yd`; break;
+                case 'mmToIn': result = value / 25.4; text = `${value} mm = ${result.toFixed(2)} inches`; break;
+                case 'inToMm': result = value * 25.4; text = `${value} inches = ${result.toFixed(2)} mm`; break;
+                default: text = 'Select a conversion type.';
+            }
+
+            document.getElementById('measurementResult').innerText = text;
+        }
+
+        // Wood Type Recommender
+        function recommendWood() {
+            const projectType = document.getElementById('projectType').value;
+            let recommendation = '';
+
+            switch (projectType) {
+                case 'furniture':
+                    recommendation = 'Recommended: Oak, Mahogany, or Walnut — durable, smooth finish, and great for luxury furniture.';
+                    break;
+                case 'outdoor':
+                    recommendation = 'Recommended: Teak, Cedar, or Iroko — excellent weather resistance and insect repellent.';
+                    break;
+                case 'cabinet':
+                    recommendation = 'Recommended: Maple, Plywood, or Birch — stable, lightweight, and finishes well.';
+                    break;
+                case 'frame':
+                    recommendation = 'Recommended: Iroko, Oak, or Beech — hard and stable for structural builds.';
+                    break;
+                case 'flooring':
+                    recommendation = 'Recommended: Oak, Cherry, or Bamboo — durable and visually appealing for heavy foot traffic.';
+                    break;
+                case 'roofing':
+                    recommendation = 'Recommended: Pine, Spruce, or Douglas Fir — lightweight yet strong and affordable.';
+                    break;
+                case 'boat':
+                    recommendation = 'Recommended: Teak or Mahogany — water-resistant, durable, and perfect for marine use.';
+                    break;
+                case 'carving':
+                    recommendation = 'Recommended: Basswood, Walnut, or Mahogany — easy to carve with a smooth finish.';
+                    break;
+                case 'kitchen':
+                    recommendation = 'Recommended: Maple, Oak, or Beech — strong, hygienic, and ideal for countertops and kitchen fittings.';
+                    break;
+                case 'lightwork':
+                    recommendation = 'Recommended: Pine, Cedar, or MDF — easy to cut and shape for light, decorative tasks.';
+                    break;
+                default:
+                    recommendation = 'Please select a project type.';
+            }
+
+            document.getElementById('woodResult').innerText = recommendation;
+        }
+
+        // Material Estimator
+        function calculateArea() {
+            const length = parseFloat(document.getElementById('length').value) || 0;
+            const width = parseFloat(document.getElementById('width').value) || 0;
+            const area = length * width;
+            document.getElementById('areaResult').innerText = `Estimated surface area: ${area.toFixed(2)} sq. ft`;
+        }
+
+        // Modal Controls
+        function showInfo(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        window.onclick = function(e) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(m => {
+                if (e.target === m) m.style.display = 'none';
+            });
+        };
+    </script>
+</body>
+</html>

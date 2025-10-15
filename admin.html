@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Admin dashboard for Tech Horizon Blog to manage posts.">
+  <title>Tech Horizon Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.15/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .dropdown { position: relative; }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      background-color: #e0fdf8;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      z-index: 10;
+      min-width: 160px;
+      border-radius: 4px;
+    }
+    .dropdown.active .dropdown-menu { display: block; }
+    .dropdown-menu li { padding: 0.5rem 1rem; cursor: pointer; }
+    .dropdown-menu li:hover { background-color: #007f66; color: #e5fcfb; }
+    body {
+      background: linear-gradient(to bottom, #e6f0fa, #d1fae5);
+    }
+    .preserve-whitespace {
+      white-space: pre-wrap;
+    }
+    .auto-fit-image {
+      width: 100%;
+      max-height: 32px;
+      object-fit: contain;
+      border-radius: 0.5rem;
+    }
+    .auto-fit-image-small {
+      width: 24px;
+      max-height: 24px;
+      object-fit: contain;
+      border-radius: 0.5rem;
+    }
+    .clipped-image {
+      transform: scale(0.9);
+      transform-origin: top;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const AdminApp = () => {
+      const [adminLogin, setAdminLogin] = useState(false);
+      const [adminUsername, setAdminUsername] = useState("");
+      const [adminPassword, setAdminPassword] = useState("");
+      const [loginAttempts, setLoginAttempts] = useState(0);
+      const [isAccountLocked, setIsAccountLocked] = useState(localStorage.getItem("isAccountLocked") === "true");
+      const [showAdminPage, setShowAdminPage] = useState(false);
+      const [previewPost, setPreviewPost] = useState(null);
+      const [notifications, setNotifications] = useState(JSON.parse(localStorage.getItem("adminNotifications")) || []);
+      const [currentAdmin, setCurrentAdmin] = useState(null);
+      const [auditLog, setAuditLog] = useState(JSON.parse(localStorage.getItem("auditLog")) || []);
+
+      const categories = ["AI & Education", "Tech Updates", "Innovation", "Gadgets"];
+      const [posts, setPosts] = useState(JSON.parse(localStorage.getItem("posts")) || [
+        { id: 1, category: "AI & Education", title: "How AI is Revolutionizing Classrooms", excerpt: "Explore AI's role in personalized learning.\n\nNew paragraph here.", date: "2025-07-29", media: "" },
+        { id: 2, category: "Tech Updates", title: "Latest 5G Breakthroughs in 2025", excerpt: "Discover the newest advancements in 5G tech.\n\t- Faster speeds\n\t- Better connectivity", date: "2025-07-28", media: "" },
+        { id: 3, category: "Innovation", title: "The Future of Quantum Computing", excerpt: "A deep dive into quantum technology.\n\nThis is a new paragraph.\n\t- Tabbed point", date: "2025-07-27", media: "" },
+      ]);
+      const [pendingPosts, setPendingPosts] = useState(JSON.parse(localStorage.getItem("pendingPosts")) || []);
+
+      // Persist data to localStorage
+      useEffect(() => {
+        localStorage.setItem("posts", JSON.stringify(posts));
+        localStorage.setItem("pendingPosts", JSON.stringify(pendingPosts));
+        localStorage.setItem("adminNotifications", JSON.stringify(notifications));
+        localStorage.setItem("auditLog", JSON.stringify(auditLog.slice(-100)));
+      }, [posts, pendingPosts, notifications, auditLog]);
+
+      // Check login state on load
+      useEffect(() => {
+        const isLoggedIn = localStorage.getItem("isAdminLoggedIn") === "true";
+        setShowAdminPage(isLoggedIn);
+        if (!isLoggedIn) {
+          setAdminLogin(true);
+        }
+      }, []);
+
+      // Discreet admin login trigger (Ctrl + click on logo)
+      useEffect(() => {
+        const handleLogoClick = (e) => {
+          if (e.ctrlKey) {
+            setAdminLogin(true);
+          }
+        };
+        const logoElement = document.querySelector(".header-logo");
+        if (logoElement) {
+          logoElement.addEventListener("click", handleLogoClick);
+          return () => logoElement.removeEventListener("click", handleLogoClick);
+        }
+      }, []);
+
+      // Check for notifications on load
+      useEffect(() => {
+        const checkNotifications = () => {
+          const currentNotifications = JSON.parse(localStorage.getItem("adminNotifications")) || [];
+          if (currentNotifications.length > notifications.length) {
+            const newNotifications = currentNotifications.slice(notifications.length);
+            newNotifications.forEach(note => {
+              alert(note.message);
+            });
+            setNotifications(currentNotifications);
+          }
+        };
+        const interval = setInterval(checkNotifications, 5000);
+        return () => clearInterval(interval);
+      }, [notifications]);
+
+      const logAction = (action, details) => {
+        const newLog = { date: new Date().toLocaleString(), action, details };
+        setAuditLog([...auditLog, newLog].slice(-100));
+      };
+
+      const handleAdminLogin = () => {
+        if (isAccountLocked) {
+          logAction("Failed Login", `Account locked for username "${adminUsername}"`);
+          alert("Admin account is locked. Contact the developer to unlock.");
+          return;
+        }
+
+        const adminCredentials = JSON.parse(localStorage.getItem("adminCredentials")) || [
+          { username: "admin", password: "secure2025", permissions: ["create_posts", "publish_posts"], suspended: false, createdAt: "2025-08-07" }
+        ];
+        const validAdmin = adminCredentials.find(cred => cred.username === adminUsername && cred.password === adminPassword);
+
+        if (validAdmin) {
+          if (validAdmin.suspended) {
+            logAction("Failed Login", `Suspended admin "${adminUsername}" attempted login`);
+            alert("This admin account is suspended. Contact the developer to unsuspend.");
+            return;
+          }
+          setLoginAttempts(0);
+          setShowAdminPage(true);
+          setAdminLogin(false);
+          setCurrentAdmin(validAdmin);
+          localStorage.setItem("isAdminLoggedIn", "true");
+          logAction("Login", `Admin "${adminUsername}" logged in successfully`);
+          console.log("Admin login successful, showing dashboard...");
+        } else {
+          setLoginAttempts(loginAttempts + 1);
+          logAction("Failed Login", `Attempt ${loginAttempts + 1} with username "${adminUsername}"`);
+          alert("Incorrect username or password. Try again.");
+          if (loginAttempts + 1 >= 2) {
+            setIsAccountLocked(true);
+            localStorage.setItem("isAccountLocked", "true");
+            logAction("Account Locked", `Admin account locked for username "${adminUsername}"`);
+            alert("Admin account locked due to multiple failed attempts. Contact the developer.");
+          }
+        }
+      };
+
+      const handleLogout = () => {
+        logAction("Logout", `Admin "${adminUsername}" logged out`);
+        setShowAdminPage(false);
+        setAdminLogin(false);
+        setAdminUsername("");
+        setAdminPassword("");
+        setLoginAttempts(0);
+        setIsAccountLocked(false);
+        setCurrentAdmin(null);
+        localStorage.removeItem("isAdminLoggedIn");
+        localStorage.removeItem("isAccountLocked");
+        window.location.href = "index.html";
+      };
+
+      const handlePreviewPost = () => {
+        if (!currentAdmin?.permissions.includes("create_posts")) {
+          logAction("Failed Preview Post", `Admin "${adminUsername}" lacks create_posts permission`);
+          alert("You lack permission to create posts.");
+          return;
+        }
+        const form = document.getElementById("postForm");
+        const title = form.title.value;
+        const excerpt = form.excerpt.value;
+        const category = form.category.value;
+        const media = form.media.files[0] ? URL.createObjectURL(form.media.files[0]) : "";
+        const date = new Date().toISOString().split('T')[0];
+        if (title && excerpt && category) {
+          setPreviewPost({ title, excerpt, category, media, date });
+          logAction("Preview Post", `Admin "${adminUsername}" previewed post "${title}"`);
+        } else {
+          logAction("Failed Preview Post", `Admin "${adminUsername}" missed required fields`);
+          alert("Please fill in all required fields (title, excerpt, category) to preview.");
+          setPreviewPost(null);
+        }
+      };
+
+      const handleSendForApproval = (e) => {
+        e.preventDefault();
+        if (!currentAdmin?.permissions.includes("create_posts")) {
+          logAction("Failed Send Post", `Admin "${adminUsername}" lacks create_posts permission`);
+          alert("You lack permission to create posts.");
+          return;
+        }
+        if (!previewPost) {
+          logAction("Failed Send Post", `Admin "${adminUsername}" did not preview post`);
+          alert("Please preview the post before sending for approval.");
+          return;
+        }
+        const newPendingPost = { id: pendingPosts.length + posts.length + 1, ...previewPost, status: "pending" };
+        setPendingPosts([...pendingPosts, newPendingPost]);
+        logAction("Send Post for Approval", `Admin "${adminUsername}" sent post "${previewPost.title}" for approval`);
+        alert("Post sent for approval!");
+        setPreviewPost(null);
+        e.target.reset();
+      };
+
+      const handlePublishPost = (post) => {
+        if (!currentAdmin?.permissions.includes("publish_posts")) {
+          logAction("Failed Publish Post", `Admin "${adminUsername}" lacks publish_posts permission`);
+          alert("You lack permission to publish posts.");
+          return;
+        }
+        setPosts([...posts, { ...post, status: "published" }]);
+        setPendingPosts(pendingPosts.filter(p => p.id !== post.id));
+        setNotifications([...notifications, { message: `Your post "${post.title}" has been published!`, timestamp: new Date().toLocaleString() }]);
+        logAction("Publish Post", `Admin "${adminUsername}" published post "${post.title}"`);
+        alert("Post published successfully!");
+      };
+
+      // Admin Dashboard
+      if (showAdminPage) {
+        return (
+          <div className="min-h-screen font-sans">
+            <header className="bg-[#00412d] text-[#e5fcfb] p-3 shadow-md sticky top-0 z-20">
+              <div className="container mx-auto flex justify-between items-center">
+                <div className="header-logo">
+                  <img src="images/The Qlip2.png" alt="Tech Horizon" className="h-16" />
+                </div>
+                <div className="flex items-center space-x-4">
+                  <h2 className="text-xl font-bold">Admin Dashboard</h2>
+                  <span className="text-sm bg-[#007f66] px-2 py-1 rounded-full">Total Posts: {posts.length} | Pending: {pendingPosts.length}</span>
+                  <button onClick={handleLogout} className="bg-[#007f66] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#005f4d] transition">Logout</button>
+                </div>
+              </div>
+            </header>
+            <div className="container mx-auto p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Post Creation Form */}
+                <div>
+                  <h3 className="text-2xl font-semibold text-[#00412d] mb-4">Create New Post</h3>
+                  <form
+                    id="postForm"
+                    onSubmit={handleSendForApproval}
+                    className="bg-[#e0fdf8] p-6 rounded-lg shadow-lg"
+                    disabled={!currentAdmin?.permissions.includes("create_posts")}
+                  >
+                    <div className="mb-4">
+                      <label className="block text-[#00412d] font-medium mb-1">Post Title</label>
+                      <input
+                        type="text"
+                        name="title"
+                        placeholder="Enter title"
+                        required
+                        className={`w-full p-3 border border-[#007f66] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007f66] transition ${!currentAdmin?.permissions.includes("create_posts") ? "bg-gray-200 cursor-not-allowed" : ""}`}
+                        disabled={!currentAdmin?.permissions.includes("create_posts")}
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-[#00412d] font-medium mb-1">Excerpt</label>
+                      <textarea
+                        name="excerpt"
+                        placeholder="Enter excerpt with paragraphs and tabs"
+                        required
+                        className={`w-full p-3 border border-[#007f66] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007f66] transition preserve-whitespace ${!currentAdmin?.permissions.includes("create_posts") ? "bg-gray-200 cursor-not-allowed" : ""}`}
+                        rows="6"
+                        disabled={!currentAdmin?.permissions.includes("create_posts")}
+                      ></textarea>
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-[#00412d] font-medium mb-1">Category</label>
+                      <select
+                        name="category"
+                        required
+                        className={`w-full p-3 border border-[#007f66] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007f66] transition ${!currentAdmin?.permissions.includes("create_posts") ? "bg-gray-200 cursor-not-allowed" : ""}`}
+                        disabled={!currentAdmin?.permissions.includes("create_posts")}
+                      >
+                        <option value="">Select Category</option>
+                        {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                      </select>
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-[#00412d] font-medium mb-1">Media (Image/Video)</label>
+                      <input
+                        type="file"
+                        name="media"
+                        accept="image/*,video/*"
+                        className={`w-full p-3 border border-[#007f66] rounded-lg ${!currentAdmin?.permissions.includes("create_posts") ? "bg-gray-200 cursor-not-allowed" : ""}`}
+                        disabled={!currentAdmin?.permissions.includes("create_posts")}
+                      />
+                    </div>
+                    <div className="flex justify-end space-x-4">
+                      <button
+                        type="button"
+                        onClick={handlePreviewPost}
+                        className={`bg-[#007f66] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#005f4d] transition ${!currentAdmin?.permissions.includes("create_posts") ? "bg-gray-400 cursor-not-allowed" : ""}`}
+                        disabled={!currentAdmin?.permissions.includes("create_posts")}
+                      >
+                        Preview
+                      </button>
+                      <button
+                        type="submit"
+                        className={`bg-[#00412d] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#007f66] transition ${!currentAdmin?.permissions.includes("create_posts") ? "bg-gray-400 cursor-not-allowed" : ""}`}
+                        disabled={!currentAdmin?.permissions.includes("create_posts")}
+                      >
+                        Send for Approval
+                      </button>
+                    </div>
+                    {!currentAdmin?.permissions.includes("create_posts") && (
+                      <p className="text-red-500 mt-2">You lack permission to create posts.</p>
+                    )}
+                  </form>
+                </div>
+
+                {/* Post Preview */}
+                <div>
+                  {previewPost && (
+                    <div className="bg-[#e0fdf8] rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
+                      <div className="p-6">
+                        <h3 className="text-xl font-semibold text-[#00412d] mb-2">{previewPost.title}</h3>
+                        {previewPost.media && (
+                          <div className="mb-4">
+                            {previewPost.media.match(/\.(mp4|webm|ogg)$/i) ? (
+                              <video src={previewPost.media} controls className="w-full max-h-32 object-cover rounded-lg" />
+                            ) : (
+                              <img src={previewPost.media} alt={previewPost.title} className="w-full max-h-32 object-contain rounded-lg clipped-image" />
+                            )}
+                          </div>
+                        )}
+                        <p className="text-[#115e57] mb-4 preserve-whitespace">{previewPost.excerpt}</p>
+                        <p className="text-sm text-[#00412d]">{previewPost.date}</p>
+                        <a href="#" className="text-[#007f66] hover:underline mt-2 inline-block">Read More</a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Notifications */}
+              {notifications.length > 0 && (
+                <div className="mt-6 bg-[#e0fdf8] p-6 rounded-lg shadow-lg">
+                  <h3 className="text-xl font-semibold text-[#00412d] mb-4">Notifications</h3>
+                  {notifications.map((note, index) => (
+                    <div key={index} className="text-[#115e57] mb-2 flex justify-between items-center">
+                      <span>{note.message} <span className="text-sm">({note.timestamp})</span></span>
+                      <button
+                        onClick={() => setNotifications(notifications.filter((_, i) => i !== index))}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <i className="fas fa-times"></i>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Approved Posts with Post Button */}
+              <div className="mt-6">
+                <h3 className="text-2xl font-semibold text-[#00412d] mb-4">Approved Posts</h3>
+                <ul className="bg-[#e0fdf8] p-6 rounded-lg shadow-lg">
+                  {pendingPosts.filter(post => post.status === "approved").map(post => (
+                    <li key={post.id} className="text-[#115e57] mb-4 flex items-center justify-between">
+                      <div>
+                        <span className="font-semibold">{post.title} ({post.category})</span>
+                        {post.media && (
+                          <div className="mt-2 mb-2">
+                            {post.media.match(/\.(mp4|webm|ogg)$/i) ? (
+                              <video src={post.media} controls className="w-32 max-h-24 object-cover rounded-lg" />
+                            ) : (
+                              <img src={post.media} alt={post.title} className="w-32 max-h-24 object-contain rounded-lg clipped-image" />
+                            )}
+                          </div>
+                        )}
+                        <p className="text-[#115e57] mt-2 preserve-whitespace">{post.excerpt}</p>
+                        <p className="text-sm">{post.date}</p>
+                      </div>
+                      {currentAdmin?.permissions.includes("publish_posts") ? (
+                        <button
+                          onClick={() => handlePublishPost(post)}
+                          className="bg-[#00412d] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#007f66] transition"
+                        >
+                          Post
+                        </button>
+                      ) : (
+                        <p className="text-red-500">No permission to publish.</p>
+                      )}
+                    </li>
+                  ))}
+                  {pendingPosts.filter(post => post.status === "approved").length === 0 && (
+                    <p className="text-[#115e57]">No approved posts yet.</p>
+                  )}
+                </ul>
+              </div>
+
+              {/* Existing Published Posts */}
+              <div className="mt-6">
+                <h3 className="text-2xl font-semibold text-[#00412d] mb-4">Published Posts</h3>
+                <ul className="bg-[#e0fdf8] p-6 rounded-lg shadow-lg">
+                  {posts.map(post => (
+                    <li key={post.id} className="text-[#115e57] mb-4 flex items-center">
+                      <div>
+                        <span className="font-semibold">{post.title} ({post.category})</span>
+                        {post.media && (
+                          <div className="mt-2 mb-2">
+                            {post.media.match(/\.(mp4|webm|ogg)$/i) ? (
+                              <video src={post.media} controls className="w-32 max-h-24 object-cover rounded-lg" />
+                            ) : (
+                              <img src={post.media} alt={post.title} className="w-32 max-h-24 object-contain rounded-lg clipped-image" />
+                            )}
+                          </div>
+                        )}
+                        <p className="text-[#115e57] mt-2 preserve-whitespace">{post.excerpt}</p>
+                        <p className="text-sm">{post.date}</p>
+                      </div>
+                    </li>
+                  ))}
+                  {posts.length === 0 && <p className="text-[#115e57]">No published posts yet.</p>}
+                </ul>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // Login Modal
+      return (
+        <div className="min-h-screen font-sans flex items-center justify-center">
+          <div className="bg-[#e0fdf8] p-8 rounded-lg shadow-xl w-full max-w-md">
+            <div className="header-logo mb-6 text-center">
+              <img src="images/The Qlip2.png" alt="Tech Horizon" className="h-16 mx-auto" />
+            </div>
+            <h2 className="text-2xl font-bold text-[#00412d] mb-6 text-center">Admin Login</h2>
+            <input
+              type="text"
+              value={adminUsername}
+              onChange={(e) => setAdminUsername(e.target.value)}
+              placeholder="Username"
+              className="w-full p-3 mb-4 border border-[#007f66] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007f66] transition"
+              disabled={isAccountLocked}
+            />
+            <input
+              type="password"
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+              placeholder="Password"
+              className="w-full p-3 mb-6 border border-[#007f66] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007f66] transition"
+              disabled={isAccountLocked}
+            />
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={handleAdminLogin}
+                className="bg-[#00412d] text-[#e5fcfb] px-6 py-3 rounded-lg hover:bg-[#007f66] transition disabled:bg-gray-400"
+                disabled={isAccountLocked}
+              >
+                Login
+              </button>
+              <a
+                href="index.html"
+                className="bg-[#e0fdf8] text-[#115e57] px-6 py-3 rounded-lg border border-[#007f66] hover:bg-[#007f66] hover:text-[#e5fcfb] transition"
+              >
+                Back to Home
+              </a>
+            </div>
+            {isAccountLocked && (
+              <div className="mt-4 text-center">
+                <p className="text-red-500 mb-2">Account is locked due to multiple failed attempts.</p>
+                <p className="text-[#115e57]">Contact the developer to unlock.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<AdminApp />, document.getElementById('root'));
+  </script>
+</body>
+</html>
+```

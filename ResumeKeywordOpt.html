@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Resume Keyword Optimizer - Automatically match your CV to job descriptions with expert precision." />
+  <title>Resume Keyword Optimizer</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- PDF.js and Mammoth.js for file reading -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.19/mammoth.browser.min.js"></script>
+  <!-- FileSaver.js for download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <!-- jsPDF for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #002e22;
+      color: #115e57;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: hsl(165, 94%, 87%);
+      color: #002e22;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .header-logo img {
+      height: 70px;
+      width: auto;
+    }
+
+    .header-title {
+      font-size: 1.7em;
+      margin: 0;
+      flex-grow: 1;
+      text-align: center;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-nav a {
+      color: #e5fcfb;
+      text-decoration: none;
+      margin-left: 15px;
+      font-size: 1.2em;
+    }
+
+    .back-icon {
+      position: static;
+      padding: 10px 12px;
+      background-color: #00412d;
+      color: #e0fdf8;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, background-color 0.3s;
+    }
+
+    .back-icon:hover {
+      transform: scale(1.1);
+      background-color: #007f66;
+    }
+
+    .home-icon {
+      position: static;
+      padding: 10px 12px;
+      background-color: #00412d;
+      color: #e0fdf8;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, background-color 0.3s;
+    }
+
+    .home-icon:hover {
+      transform: scale(1.1);
+      background-color: #007f66;
+    }
+
+    .home-icon i, .back-icon i {
+      margin: 0;
+    }
+
+    .keyword-optimizer {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      padding: 20px 0;
+      margin-top: 100px;
+      flex: 1 0 auto;
+    }
+
+    .optimizer-content {
+      max-width: 900px;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      color: #e5fcfb;
+    }
+
+    .optimizer-content h2 {
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 4px rgba(0, 127, 102, 0.5);
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .optimizer-content p {
+      margin-bottom: 25px;
+      font-size: 1.1em;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 1em;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      max-width: 400px;
+      padding: 12px;
+      border: 2px solid #007f66;
+      border-radius: 8px;
+      background-color: #e0fdf8;
+      color: #00412d;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: #00cc99;
+      outline: none;
+    }
+
+    .upload-btn {
+      background-color: hsl(175, 100%, 13%);
+      color: #e0fdf8;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .upload-btn:hover {
+      background-color: #007f66;
+    }
+
+    .optimize-button {
+      background-color: hsl(175, 100%, 13%);
+      color: #e0fdf8;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2em;
+      transition: background-color 0.3s, transform 0.3s;
+      display: block;
+      margin: 20px auto;
+    }
+
+    .optimize-button:hover {
+      background-color: #007f66;
+      transform: scale(1.05);
+    }
+
+    .improve-button {
+      background-color: #ff4d4d;
+      color: #e0fdf8;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color 0.3s, transform 0.3s;
+      display: none;
+    }
+
+    .improve-button.visible {
+      display: inline-block;
+    }
+
+    .improve-button:hover {
+      background-color: #cc0000;
+      transform: scale(1.05);
+    }
+
+    .result-section {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #00412d;
+      border-radius: 8px;
+      color: #e0fdf8;
+      position: relative;
+      min-height: 150px;
+    }
+
+    .result-section .button-container {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+    }
+
+    .download-button {
+      background-color: #00cc99;
+      color: #002e22;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      margin-top: 15px;
+      transition: background-color 0.3s, transform 0.3s;
+      display: none;
+    }
+
+    .download-button:hover {
+      background-color: #009966;
+      transform: scale(1.05);
+    }
+
+    .format-select {
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 2px solid #007f66;
+      background-color: #e0fdf8;
+      color: #00412d;
+      font-size: 1em;
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 10px;
+      background-color: #00cc99;
+      border-radius: 5px;
+      margin-top: 10px;
+      transition: width 2s ease-in-out;
+    }
+
+    .result-section h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .result-section p {
+      margin: 5px 0;
+    }
+
+    .match, .missing {
+      padding: 5px 10px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .match {
+      background-color: #00cc99;
+      color: #002e22;
+    }
+
+    .missing {
+      background-color: #ff4d4d;
+      color: #e0fdf8;
+    }
+
+    .enhanced-cv {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #003d2e;
+      border-radius: 8px;
+      color: #e0fdf8;
+    }
+
+    .enhanced-cv h4 {
+      font-size: 1.3em;
+      margin-bottom: 10px;
+    }
+
+    .enhanced-cv pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    footer {
+      background-color: #222;
+      color: #e5fcfb;
+      text-align: center;
+      padding: 10px;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .optimizer-content {
+        padding: 10px;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        max-width: 100%;
+      }
+
+      .header-title {
+        font-size: 1.2em;
+      }
+
+      .header-logo img {
+        height: 60px;
+      }
+
+      .header-nav a {
+        font-size: 1.2em;
+      }
+
+      .optimize-button,
+      .improve-button,
+      .download-button {
+        width: 100%;
+        margin: 15px 0;
+      }
+
+      .result-section .button-container {
+        position: static;
+        text-align: right;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <noscript>
+    <div style="background: #fff3cd; padding: 1em; text-align: center; font-size: 0.95em;">
+      <strong>Notice:</strong> This site requires JavaScript for full functionality. Please enable it in your browser.
+    </div>
+  </noscript>
+
+  <header>
+    <div class="header-logo">
+      <img src="images/The Qlip.png" alt="The Qlip" class="logo-image" />
+    </div>
+    <h1 class="header-title">Resume Keyword Optimizer</h1>
+    <div class="header-nav">
+      <a href="javascript:history.back()" title="Back" class="back-icon"><i class="fas fa-arrow-left"></i></a>
+      <a href="index.html" class="home-icon" aria-label="Back to Home"><i class="fas fa-home"></i></a>
+    </div>
+  </header>
+
+  <section class="keyword-optimizer">
+    <div class="optimizer-content">
+      <h2>Optimize Your Resume for Success</h2>
+      <p>Unlock your dream job by aligning your CV with job descriptions. Our advanced keyword optimizer analyzes and enhances your resume in real-time.</p>
+      <form id="optimizer-form">
+        <div class="form-group">
+          <label for="job-description">Job Description <span style="color: #ff4d4d;">*</span></label>
+          <textarea id="job-description" name="job-description" placeholder="Paste the job description here..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="cv-content">Your CV Content <span style="color: #ff4d4d;">*</span></label>
+          <textarea id="cv-content" name="cv-content" placeholder="Paste your CV content here or upload a file..." required></textarea>
+          <button type="button" class="upload-btn" onclick="document.getElementById('cv-file').click()">Upload CV File</button>
+          <input type="file" id="cv-file" name="cv-file" accept=".pdf,.docx,.txt" style="display: none;" onchange="readFile(this)">
+        </div>
+        <button type="submit" class="optimize-button">Optimize Now</button>
+      </form>
+      <div id="progress-bar" class="progress-bar"></div>
+      <div id="result-section" class="result-section"></div>
+      <div id="enhanced-cv" class="enhanced-cv">
+        <h4>Optimized CV Preview</h4>
+        <div id="enhanced-content"></div>
+        <select id="format-select" class="format-select">
+          <option value="pdf">Download as PDF</option>
+          <option value="txt">Download as Text</option>
+        </select>
+        <button id="download-button" class="download-button">Download Enhanced CV</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 The Qlip. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Global variables to store CV content and missing keywords
+    let currentCvContent = '';
+    let currentMissingKeywords = [];
+
+    // File reading function for PDF, Word, and Text
+    async function readFile(input) {
+      const file = input.files[0];
+      if (file) {
+        const cvContent = document.getElementById('cv-content');
+        try {
+          if (file.type === 'application/pdf') {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const page = await pdf.getPage(1);
+            const text = await page.getTextContent();
+            cvContent.value = text.items.map(item => item.str).join(' ');
+          } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            const arrayBuffer = await file.arrayBuffer();
+            const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+            cvContent.value = result.value;
+          } else if (file.type === 'text/plain') {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              cvContent.value = e.target.result;
+            };
+            reader.readAsText(file);
+          } else {
+            alert('Unsupported file format. Please upload a PDF, Word, or Text file.');
+            cvContent.value = '';
+          }
+        } catch (error) {
+          console.error('File reading error:', error);
+          alert('Error reading file. Please try again.');
+        }
+      }
+    }
+
+    function extractKeywords(text) {
+      return text
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .split(/\s+/)
+        .filter(word => word.length >= 2)
+        .filter(word => !/^(and|or|the|is|to|for|of|in|on|at|by|with|a|an)$/i.test(word))
+        .filter((word, index, self) => self.indexOf(word) === index)
+        .slice(0, 20);
+    }
+
+    document.getElementById('optimizer-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const jobDescription = document.getElementById('job-description').value.trim();
+      currentCvContent = document.getElementById('cv-content').value.trim();
+      if (!jobDescription || !currentCvContent) {
+        alert('Please provide both job description and CV content.');
+        return;
+      }
+
+      const progressBar = document.getElementById('progress-bar');
+      const resultSection = document.getElementById('result-section');
+      const enhanceSection = document.getElementById('enhanced-cv');
+      progressBar.style.width = '0';
+      resultSection.style.display = 'none';
+      enhanceSection.style.display = 'none';
+      progressBar.style.width = '100%';
+
+      setTimeout(() => {
+        progressBar.style.width = '0';
+        const keywords = extractKeywords(jobDescription);
+        const cvKeywords = extractKeywords(currentCvContent);
+        const matches = keywords.filter(k => cvKeywords.includes(k));
+        currentMissingKeywords = keywords.filter(k => !cvKeywords.includes(k));
+
+        console.log('Job Description Text:', jobDescription);
+        console.log('CV Content Text:', currentCvContent);
+        console.log('Job Description Keywords:', keywords);
+        console.log('CV Keywords:', cvKeywords);
+        console.log('Matches:', matches);
+        console.log('Missing:', currentMissingKeywords);
+
+        let resultHtml = '<h3>Optimization Results</h3>';
+        resultHtml += '<p><strong>Matching Keywords:</strong></p>';
+        resultHtml += matches.map(k => `<span class="match">${k}</span>`).join(', ') || '<p>No matches found.</p>';
+        resultHtml += '<p><strong>Missing Keywords (Suggestions):</strong></p>';
+        resultHtml += currentMissingKeywords.map(k => `<span class="missing">${k}</span>`).join(', ') || '<p>No missing keywords.</p>';
+
+        if (currentMissingKeywords.length > 0) {
+          resultHtml += '<div class="button-container"><button class="improve-button visible" onclick="enhanceCV()">Improve CV</button></div>';
+        } else {
+          console.log('No missing keywords, button not added.');
+        }
+
+        resultSection.innerHTML = resultHtml;
+        resultSection.style.display = 'block';
+
+        console.log('Result HTML:', resultHtml);
+        console.log('Result Section Display:', resultSection.style.display);
+      }, 2000);
+    });
+
+      function enhanceCV() {
+        const enhanceSection = document.getElementById('enhanced-cv');
+        const enhancedContent = document.getElementById('enhanced-content');
+        let enhancedText = `**Enhanced CV for ${new Date().toLocaleDateString()}**\n\n`;
+
+        // Enhanced Professional Summary with integrated keywords
+        let summary = currentCvContent.split('\n')[0] || 'A dynamic professional with expertise in...';
+        if (currentMissingKeywords.length > 0) {
+          summary += `. Skilled in ${currentMissingKeywords.join(', ')} alongside existing expertise.`;
+        }
+        enhancedText += '### Professional Summary\n';
+        enhancedText += summary + '\n\n';
+
+        // Key Skills section with missing keywords
+        enhancedText += '### Key Skills\n';
+        enhancedText += currentCvContent.match(/Skills/i) 
+          ? currentCvContent.match(/Skills.*/i)[0].replace('Skills', '') + '\n' 
+          : currentMissingKeywords.map(k => `- ${k}`).join('\n') + '\n';
+
+        // Append Experience or Education if present, otherwise rest of CV
+        const experienceSection = currentCvContent.match(/Experience|Education/i) 
+          ? currentCvContent.match(/Experience|Education.*/i)[0] 
+          : currentCvContent.replace(summary, '').trim();
+        if (experienceSection) {
+          enhancedText += '### ' + (experienceSection.match(/Experience/i) ? 'Experience' : 'Education') + '\n';
+          enhancedText += experienceSection.replace(/Experience|Education/i, '').trim() + '\n';
+        }
+
+        enhancedContent.innerHTML = `<pre>${enhancedText}</pre>`;
+        enhanceSection.style.display = 'block';
+        document.getElementById('download-button').style.display = 'block';
+        document.getElementById('format-select').style.display = 'block';
+
+        console.log('Enhanced CV displayed with keywords:', currentMissingKeywords);
+      }
+
+    document.getElementById('download-button').addEventListener('click', function() {
+      const enhancedContent = document.getElementById('enhanced-content').querySelector('pre').textContent;
+      const format = document.getElementById('format-select').value;
+
+      if (format === 'pdf') {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(12);
+        // Split text into lines and add to PDF with basic formatting
+        const lines = enhancedContent.split('\n');
+        let y = 10;
+        lines.forEach(line => {
+          if (y > 280) {
+            doc.addPage();
+            y = 10;
+          }
+          doc.text(line, 10, y);
+          y += 10;
+        });
+        doc.save(`Enhanced_CV_${new Date().toISOString().split('T')[0]}.pdf`);
+      } else {
+        const blob = new Blob([enhancedContent], { type: 'text/plain' });
+        saveAs(blob, `Enhanced_CV_${new Date().toISOString().split('T')[0]}.txt`);
+      }
+    });
+  </script>
+</body>
+</html>

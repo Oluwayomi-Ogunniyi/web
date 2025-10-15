@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Digital Invoice Generator - Create and print professional invoices with ease.">
+  <title>The Qlip - Digital Invoice Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Global Styles - Adjusted for consistency */
+    html {
+      height: -webkit-fill-available;
+    }
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #002e22;
+      color: #115e57;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header Styles */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: hsl(165, 94%, 87%);
+      color: #222e00;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .header-logo img {
+      height: 70px;
+      width: auto;
+    }
+
+    .header-title {
+      font-size: 1.7em;
+      margin: 0;
+      flex-grow: 1;
+      text-align: center;
+      color: #002e22;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+    }
+
+    .header-nav a {
+      color: #e5fcfb;
+      text-decoration: none;
+      margin-left: 15px;
+      font-size: 1.2em;
+    }
+
+    .back-icon {
+      position: static;
+      padding: 10px 12px;
+      background-color: #00412d;
+      color: #e0fdf8;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, background-color 0.3s;
+    }
+
+    .back-icon:hover {
+      transform: scale(1.1);
+      background-color: #007f66;
+    }
+
+    .home-icon {
+      position: static;
+      padding: 10px 12px;
+      background-color: #00412d;
+      color: #e0fdf8;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, background-color 0.3s;
+    }
+
+    .home-icon:hover {
+      transform: scale(1.1);
+      background-color: #007f66;
+    }
+
+    .home-icon i, .back-icon i {
+      margin: 0;
+    }
+
+    /* Main Content Section */
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      padding: 20px;
+      margin-top: 100px;
+      flex: 1;
+    }
+
+    .container {
+      background: #ffffff;
+      width: 100%;
+      max-width: 800px;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      color: #2d3436;
+      position: relative;
+      box-sizing: border-box;
+      overflow-x: auto;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #059669;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 28px;
+    }
+
+    p.subtitle {
+      text-align: center;
+      color: #7f8c8d;
+      margin-bottom: 30px;
+      font-weight: 300;
+    }
+
+    .toggle-mode {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #059669;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .toggle-mode:hover {
+      background: #047857;
+    }
+
+    .info-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .info-section input {
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+      background: #f9fafb;
+      color: #374151;
+    }
+
+    .info-section input:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    @media (max-width: 600px) {
+      .info-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    th {
+      background: #059669;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    td input {
+      width: 100%;
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+      text-align: center;
+      background: #f9fafb;
+      color: #374151;
+      box-sizing: border-box;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+      margin: 5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-1px);
+    }
+
+    .remove-btn {
+      background: #ef4444;
+      color: #fff;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .remove-btn:hover {
+      background: #dc2626;
+    }
+
+    .summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0fdf4;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: right;
+      border: 1px solid #d1fae5;
+    }
+
+    .summary p {
+      margin: 5px 0;
+    }
+
+    .summary label {
+      display: block;
+      margin: 10px 0;
+      text-align: right;
+    }
+
+    .summary select, .summary input[type="date"] {
+      padding: 6px;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      margin-left: 10px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #e5fcfb;
+      padding: 10px;
+      background-color: #222;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    #invoiceArea {
+      display: none;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      margin-top: 25px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    #invoiceArea h2 {
+      text-align: center;
+      color: #059669;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    #invoiceArea p {
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    #invoiceArea table {
+      margin: 20px 0;
+      border-collapse: collapse;
+      width: 100%;
+      border: 1px solid #000;
+    }
+
+    #invoiceArea th,
+    #invoiceArea td {
+      border: 1px solid #000;
+      padding: 8px;
+      text-align: left;
+    }
+
+    #invoiceArea th {
+      background: #059669 !important;
+      color: #fff !important;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    #invoiceArea h3 {
+      text-align: right;
+      margin: 15px 0;
+      font-size: 18px;
+      color: #059669;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    @media print {
+      body {
+        background: #fff !important;
+        padding: 0 !important;
+      }
+      header, footer {
+        display: none !important;
+      }
+      .container {
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        width: 100% !important;
+        max-width: none !important;
+        border-radius: 0 !important;
+      }
+      #formArea,
+      .toggle-mode,
+      .btn,
+      .remove-btn {
+        display: none !important;
+      }
+      #invoiceArea {
+        display: block !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        page-break-inside: avoid;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      #invoiceArea table {
+        font-size: 12px;
+        border-collapse: collapse !important;
+      }
+      #invoiceArea th,
+      #invoiceArea td {
+        border: 1px solid #000 !important;
+        padding: 8px !important;
+      }
+      #invoiceArea * {
+        print-color-adjust: exact !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      main {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+      }
+
+      .container {
+        padding: 15px;
+        margin: 0;
+        width: 100%;
+        max-width: none;
+      }
+
+      #invoiceArea {
+        padding: 15px;
+        margin: 10px 0;
+      }
+
+      table {
+        font-size: 12px;
+      }
+      th, td {
+        padding: 8px 4px;
+      }
+
+      .header-title {
+        font-size: 1.2em;
+      }
+
+      .header-logo img {
+        height: 60px;
+      }
+
+      .header-nav a {
+        font-size: 1.2em;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .container {
+        width: 95%;
+        max-width: 800px;
+        padding: 25px;
+      }
+
+      #invoiceArea {
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <noscript>
+    <div style="background: #fff3cd; padding: 1em; text-align: center; font-size: 0.95em;">
+      <strong>Notice:</strong> This site requires JavaScript for full functionality. Please enable it in your browser.
+    </div>
+  </noscript>
+
+  <header>
+    <div class="header-logo">
+      <img src="images/The Qlip.png" alt="The Qlip" class="logo-image" />
+    </div>
+    <h1 class="header-title">Digital Invoice Generator</h1>
+    <div class="header-nav">
+      <a href="javascript:history.back()" title="Back" class="back-icon"><i class="fas fa-arrow-left"></i></a>
+      <a href="index.html" class="home-icon" aria-label="Back to Home"><i class="fas fa-home"></i></a>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div id="formArea">
+        <h1>🧾 Invoice Generator</h1>
+        <p class="subtitle">Quickly create and print professional invoices for clients</p>
+
+        <div class="info-section">
+          <input type="text" id="businessName" placeholder="Your Business Name">
+          <input type="text" id="businessPhone" placeholder="Business Phone Number">
+          <input type="text" id="clientName" placeholder="Client Name">
+          <input type="text" id="clientPhone" placeholder="Client Phone">
+        </div>
+
+        <table id="itemsTable">
+          <thead>
+            <tr>
+              <th>Service / Item</th>
+              <th>Price (NGN)</th>
+              <th>Qty</th>
+              <th>Total (NGN)</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="itemBody">
+            <tr>
+              <td><input type="text" placeholder="Service Description"></td>
+              <td><input type="number" placeholder="0" oninput="updateTotals()" min="0" step="0.01"></td>
+              <td><input type="number" placeholder="1" oninput="updateTotals()" min="0"></td>
+              <td class="totalCell">NGN 0</td>
+              <td><button class="remove-btn" onclick="removeRow(this)">X</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <button class="btn" onclick="addRow()">+ Add Item</button>
+
+        <div class="summary">
+          <p><strong>Grand Total:</strong> NGN <span id="grandTotal">0</span></p>
+          <label>Payment Method:
+            <select id="paymentMethod">
+              <option>Cash</option>
+              <option>Bank Transfer</option>
+              <option>POS</option>
+            </select>
+          </label>
+          <p><strong>Payment Due:</strong> <input type="date" id="dueDate"></p>
+        </div>
+
+        <button class="btn" onclick="generateInvoice()">Generate Invoice</button>
+        <button class="btn" style="background:#10b981;" onclick="window.print()">🖨️ Print</button>
+        <button class="btn" style="background:#8b5cf6;" onclick="downloadImage()">⬇️ Download Image</button>
+      </div>
+
+      <div id="invoiceArea"></div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 The Qlip. All rights reserved.</p>
+  </footer>
+
+  <!-- html2canvas CDN -->
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+  <script>
+    let currentInvoiceNo = '';
+
+    function toggleMode() {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      document.querySelector('.toggle-mode').textContent = isDark ? '☀️ Mode' : '🌙 Mode';
+    }
+
+    function addRow() {
+      const tbody = document.getElementById('itemBody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" placeholder="Service Description"></td>
+        <td><input type="number" placeholder="0" oninput="updateTotals()" min="0" step="0.01"></td>
+        <td><input type="number" placeholder="1" oninput="updateTotals()" min="0"></td>
+        <td class="totalCell">NGN 0</td>
+        <td><button class="remove-btn" onclick="removeRow(this)">X</button></td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    function removeRow(btn) {
+      if (document.querySelectorAll('#itemBody tr').length > 1) {
+        btn.closest('tr').remove();
+      }
+      updateTotals();
+    }
+
+    function formatNumber(num) {
+      return num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    }
+
+    function updateTotals() {
+      let grand = 0;
+      document.querySelectorAll('#itemBody tr').forEach(row => {
+        const priceInput = row.cells[1].querySelector('input');
+        const qtyInput = row.cells[2].querySelector('input');
+        const price = parseFloat(priceInput.value) || 0;
+        const qty = parseInt(qtyInput.value) || 1;
+        const total = price * qty;
+        row.cells[3].textContent = `NGN ${formatNumber(total)}`;
+        grand += total;
+      });
+      document.getElementById('grandTotal').textContent = formatNumber(grand);
+    }
+
+    function generateInvoice() {
+      const bizName = document.getElementById('businessName').value.trim() || 'Your Business';
+      const bizPhone = document.getElementById('businessPhone').value.trim();
+      const client = document.getElementById('clientName').value.trim() || 'Client';
+      const clientPhone = document.getElementById('clientPhone').value.trim();
+      const method = document.getElementById('paymentMethod').value;
+      const dueDate = document.getElementById('dueDate').value || 'N/A';
+      currentInvoiceNo = 'INV-' + Date.now().toString().slice(-6);
+      const date = new Date().toLocaleDateString('en-GB');
+      const grandText = document.getElementById('grandTotal').textContent;
+      const grand = parseFloat(grandText.replace(/,/g, '')) || 0;
+
+      let itemsHTML = '';
+      let hasItems = false;
+      document.querySelectorAll('#itemBody tr').forEach(row => {
+        const item = row.cells[0].querySelector('input').value.trim();
+        const price = parseFloat(row.cells[1].querySelector('input').value) || 0;
+        const qty = parseInt(row.cells[2].querySelector('input').value) || 1;
+        const totalText = row.cells[3].textContent;
+        if (item) {
+          itemsHTML += `<tr><td>${item}</td><td>NGN ${formatNumber(price)}</td><td>${qty}</td><td>${totalText}</td></tr>`;
+          hasItems = true;
+        }
+      });
+
+      if (!hasItems) {
+        itemsHTML = '<tr><td colspan="4" style="text-align:center; color:#ef4444;">No items added</td></tr>';
+      }
+
+      document.getElementById('invoiceArea').innerHTML = `
+        <h2 style="color: #059669; print-color-adjust: exact; -webkit-print-color-adjust: exact;">INVOICE</h2>
+        <p><strong>Invoice No:</strong> ${currentInvoiceNo}</p>
+        <p><strong>Date:</strong> ${date}</p>
+        <p><strong>From:</strong> ${bizName}${bizPhone ? ` (${bizPhone})` : ''}</p>
+        <p><strong>To:</strong> ${client}${clientPhone ? ` (${clientPhone})` : ''}</p>
+        <table style="width:100%; border-collapse:collapse; border:1px solid #000;">
+          <tr style="background:#059669; color:#fff; print-color-adjust: exact; -webkit-print-color-adjust: exact;">
+            <th style="border:1px solid #000; padding:8px;">Item</th>
+            <th style="border:1px solid #000; padding:8px;">Price (NGN)</th>
+            <th style="border:1px solid #000; padding:8px;">Qty</th>
+            <th style="border:1px solid #000; padding:8px;">Total (NGN)</th>
+          </tr>
+          ${itemsHTML}
+        </table>
+        <h3 style="color: #059669; print-color-adjust: exact; -webkit-print-color-adjust: exact;">Grand Total: NGN ${formatNumber(grand)}</h3>
+        <p><strong>Payment Method:</strong> ${method}</p>
+        <p><strong>Payment Due:</strong> ${dueDate}</p>
+        <p style="margin-top:25px; font-style:italic;">Thanks for your patronage!</p>
+      `;
+      document.getElementById('invoiceArea').style.display = 'block';
+    }
+
+    async function downloadImage() {
+      if (document.getElementById('invoiceArea').style.display !== 'block') {
+        alert('Please generate the invoice first.');
+        return;
+      }
+      const invoice = document.getElementById('invoiceArea');
+      const canvas = await html2canvas(invoice, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true,
+        allowTaint: true
+      });
+      const link = document.createElement('a');
+      link.download = `Invoice_${currentInvoiceNo || 'Generated'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+  </script>
+</body>
+</html>

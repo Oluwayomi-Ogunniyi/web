@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Website Accessibility | The Qlip</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f5f5f5;
+      color: #222;
+    }
+
+    header {
+      background-color: #b7fff4;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-left: 20px;
+      padding-right: 20px;
+      height: 70px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 9999;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-image {
+      height: 80px;
+      width: auto;
+      padding-left: 10px;
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      padding-right: 60px;
+    }
+
+    nav ul li {
+      position: relative;
+      margin: 0 1rem;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: rgb(4, 99, 99);
+      font-weight: bold;
+      font-size: 1rem;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: rgb(2, 48, 48);
+    }
+
+    .dropdown {
+    position: relative;
+    cursor: pointer;
+    }
+
+    .dropdown-menu.show {
+    display: block;
+    }
+
+    .dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: rgb(88, 86, 86);
+    top: 100%;
+    left: 0;
+    width: fit-content; /* Try fit-content instead of max-content */
+    padding: 0px; /* Remove padding to eliminate extra space */
+    margin: 0; /* Also remove any default margin */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    z-index: 1000;
+    overflow: hidden; /* ✅ This prevents the hover background from spilling outside */
+    }
+
+
+    .dropdown-menu li {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+    }
+
+    .dropdown-menu a {
+    display: block;
+    padding: 8px 12px;
+    color: hsl(180, 7%, 97%);
+    font-size: smaller;
+    white-space: nowrap;
+    width: 100%;
+    }
+
+
+    .dropdown-menu a:hover {
+      background-color: hsla(177, 100%, 78%, 0.418);
+      color: white;
+    }
+
+        /* Feedback Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  color: hsl(0, 0%, 0%);
+}
+
+.close {
+  color: hsl(0, 0%, 0%);
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-content input, 
+.modal-content textarea, 
+.modal-content button {
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.modal-content button {
+  background-color: #046363;
+  color: white;
+  border: none;
+  font-weight: bold;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.modal-content button:hover {
+  background-color: #023030;
+}
+
+.modal-content a {
+  color: #023030;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.modal-content a:hover {
+  color: #023030;
+}
+
+.social-link i {
+  font-size: 20px;
+  margin: 0 10px;
+  gap: 20px;
+  color: lab(1.04% -1.59 0.3); /* Adjust to match your theme */
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+.social-link i:hover {
+  transform: scale(1.3) rotate(10deg);
+  color: lab(33.31% -31.04 11.62); /* Optional: use your accent or theme color */
+}
+
+/* ========== Tablet (≤1024px) ========== */
+@media (max-width: 1024px) {
+  header {
+    padding: 0.5rem 1rem;
+    height: auto;
+  }
+
+  .logo-image {
+    height: 80px;
+  }
+
+  nav ul {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-right: 0;
+  }
+
+  nav ul li {
+    margin: 0 0.5rem;
+  }
+
+  nav a {
+    font-size: 0.95rem;
+    padding: 0.5rem;
+  }
+
+  .hero h1 {
+    font-size: 2.4rem;
+  }
+
+  .hero p {
+    font-size: 1.05rem;
+    padding: 0 1rem;
+  }
+
+  .section {
+    padding: 2rem 1.5rem;
+  }
+
+  .cta button {
+    font-size: 1.1rem;
+  }
+
+  .modal-content {
+    width: 90%;
+  }
+}
+
+/* ========== Mobile (≤768px) ========== */
+@media (max-width: 768px) {
+  .logo-image {
+    height: 70px;
+  }
+
+  nav ul {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  nav a {
+    font-size: 0.9rem;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .section h2 {
+    font-size: 1.6rem;
+  }
+
+  .section p, .section ul {
+    font-size: 1rem;
+  }
+
+  .cta button {
+    font-size: 1rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .social-link i {
+    font-size: 18px;
+  }
+}
+
+/* ========== Small Mobile (≤480px) ========== */
+@media (max-width: 480px) {
+  header {
+    padding: 0.5rem;
+    height: 60px;
+  }
+
+  .logo-image {
+    height: 70px;
+    padding-top: 5px;
+  }
+
+  nav ul {
+    gap: 0.3rem;
+  }
+
+  nav a {
+    font-size: 0.85rem;
+    padding: 0.3rem;
+  }
+
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .hero p {
+    font-size: 0.9rem;
+  }
+
+  .section h2 {
+    font-size: 1.4rem;
+  }
+
+  .section p, .section ul {
+    font-size: 0.95rem;
+  }
+
+  .cta button {
+    font-size: 0.95rem;
+    padding: 0.6rem 1rem;
+  }
+
+  footer {
+    font-size: 0.75rem;
+  }
+}
+
+    .hero {
+      background: url('images/Web-Accessibility.jpg') no-repeat center center/cover;
+      height: 70vh;
+      color: #fff;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding: 2rem;
+      margin-top: 60px; /* Adjust if your header height changes */
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 1;
+    }
+
+    .hero h1, .hero p {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 600px;
+    }
+
+    .section {
+      padding: 3rem 2rem;
+      background-color: #e0fdf8;
+      margin: 2rem auto;
+      width: 90%;
+      max-width: 1100px;
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+    }
+
+    .section h2 {
+      color: rgb(4, 99, 99);
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .section p, .section ul {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .features li, .usecases li {
+      margin-bottom: 0.75rem;
+    }
+
+    .cta {
+      text-align: center;
+      margin: 3rem 0;
+    }
+
+    .cta button {
+      background-color: rgb(4, 99, 99);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .cta button:hover {
+      background-color: rgb(2, 48, 48);
+      transform: scale(1.05);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background-color: rgb(4, 65, 65);
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+    }
+
+    /* Hamburger icon */
+.hamburger {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10001;
+  color: #023030;
+  padding-right: 13px;
+  padding-top: 5px;
+}
+
+/* Show hamburger only on tablets & smaller screens */
+@media (max-width: 1024px) {
+  .hamburger  {
+    display: block;
+  }
+
+  nav {
+    display: none; /* Hide desktop nav on small screens */
+  }
+}
+
+/* Force hide hamburger on larger screens if needed */
+@media (min-width: 1025px) {
+  .hamburger {
+    display: none !important;
+  }
+}
+
+/* Slide-in menu */
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 50%;
+  height: 100%;
+  background-color: #e0fdf8;
+  box-shadow: -4px 0 8px rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  transition: right 0.3s ease;
+  z-index: 10000;
+}
+
+.mobile-menu ul {
+  list-style: none;
+  padding: 0;
+  padding-top: 10px;
+  margin: 0rem 0 1;
+}
+
+.mobile-menu ul li {
+  margin-bottom: 1rem;
+}
+
+.mobile-menu a {
+  text-decoration: none;
+  font-size: 1rem;
+  color: hsl(0, 0%, 0%);
+  padding-left: 5px;
+}
+
+.mobile-menu.show {
+  right: 0;
+  display: flex;
+}
+
+.close-mobile-menu {
+  font-size: 35px;
+  align-self: flex-end;
+  cursor: pointer;
+  color: hsl(180, 96%, 11%);
+}
+
+.dropdown-menu a {
+  font-size: smaller; /* Adjust this to your preferred size */
+  color: #ffffff;
+  padding-left: 15px;
+  display: block;
+  text-decoration: none;
+}
+
+/* Background color of the dropdown menu */
+.dropdown-menu {
+  background-color: rgb(88, 86, 86); /* Replace with your desired background color */
+  box-shadow: 0px 0 8px rgba(0,0,0,0.8);
+}
+
+/* Text color of links inside dropdown */
+.dropdown-menu a {
+  color: #ffffff; /* Replace with your desired text color */
+}
+
+/* Hover effect for dropdown links */
+.dropdown-content a:hover {
+  background-color: #046363; /* Optional hover background */
+  color: #e0fdf8; /* Optional hover text color */
+}
+
+/* Only show hamburger on tablets & smaller */
+@media (max-width: 1024px) {
+  .hamburger {
+    display: block;
+  }
+
+  nav {
+    display: none; /* Hide original nav on smaller screens */
+  }
+}
+
+    /* Prevent text/content overflow on small screens */
+* {
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+    /* Prevent text/content overflow on small screens */
+* {
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Ensure containers are responsive */
+.container, .service-container, .Testimonial-wrapper, .hero-content, .about-hero {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Handle long unbreakable content gracefully */
+body, html {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+.mobile-social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin:-1px 0;
+}
+
+.mobile-social-icons a {
+  color: hsl(162, 100%, 7%); /* or your brand color */
+  font-size: 20px;
+  transition: color 0.3s ease;
+}
+
+.mobile-social-icons a:hover {
+  color: #1abc9c; /* highlight on hover */
+}
+.follow-us {
+  display: flex;
+  justify-content: center;
+  color: hsl(162, 100%, 7%);
+  font-size: 17px;
+  margin-top: 60px;
+}
+
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-logo">
+      <img src="images/The Qlip.png" alt="The Qlip" class="logo-image">
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li class="dropdown">
+          <a href="#">Products &#9662;</a>
+          <ul class="dropdown-menu">
+            <li><a href="WebsiteTemplate.html">Website Templates</a></li>
+            <li><a href="WebsiteBuilder.html">Website Builder</a></li>
+            <li><a href="WebsiteDesign.html">Website Design</a></li>
+            <li><a href="WebsiteHosting.html">Web Hosting</a></li>
+            <li><a href="DomainName.html">Domain Names</a></li>
+            <li><a href="WebsiteAccessibility.html">Website Accessibility</a></li>
+            <li><a href="GraphicDesign.html">Graphic Design</a></li>
+            <li><a href="MotionGraphics.html">Motion Graphics</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#">Contacts&#9662;</a>
+          <ul class="dropdown-menu">
+            <li><a href="Contactpage.html">Contact Us</a></li>
+            <li><a href="AboutPage.html">About Us</a></li>
+            <li><a href="https://wa.me/2347087342882">Chat With a Live Person</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+            <!-- Hamburger Icon -->
+<div class="hamburger" id="hamburger">
+  <i class="fas fa-bars"></i>
+</div>
+
+<!-- Slide-in Menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <div class="close-mobile-menu" id="close-mobile-menu">&times;</div>
+  <ul>
+    <li><a href="index.html">Home <span class="dot">&#8226;</span></a></li>
+    <li><a href="AboutPage.html">About Us </a></li>
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle">Products <span class="arrow">&#9662;</span></a>
+      <ul class="dropdown-menu">
+        <li><a href="WebsiteTemplate.html">Website Templates</a></li>
+        <li><a href="WebsiteBuilder.html">Website Builder</a></li>
+        <li><a href="WebsiteDesign.html">Website Design</a></li>
+        <li><a href="WebsiteHosting.html">Web Hosting</a></li>
+        <li><a href="DomainName.html">Domain Names</a></li>
+        <li><a href="WebsiteAccessibility.html">Website Accessibility</a></li>
+        <li><a href="GraphicDesign.html">Graphic Design</a></li>
+        <li><a href="MotionGraphics.html">Motion Graphics</a></li>
+      </ul>
+    </li>
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle">Contacts<span class="arrow">&#9662;</span></a>
+      <ul class="dropdown-menu">
+        <li><a href="Contactpage.html">Contact Us</a></li>
+        <li><a href="https://wa.me/2347087342882">Chat With a Live Person</a></li>
+      </ul>
+    </li>
+  </ul>
+  <div class="follow-us">
+    <h4> Or connect via. </h4>
+  </div>
+  <!-- Social Media Icons -->
+  <div class="mobile-social-icons">
+    <a href="tel:+2348156007282" target="_blank"><i class="fas fa-phone-alt"></i></a>
+    <a href="https://wa.me/2347087342882" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://tiktok.com/@the_qlip" target="_blank"><i class="fab fa-tiktok"></i></a>
+    <a href="mailto:theqlipglobal@gmail.com" target="_blank"><i class="fas fa-envelope"></i></a>
+  </div>
+</div>
+  </header>
+
+  <!-- Website Accessibility Section -->
+  <section class="hero">
+    <h1>Website Accessibility</h1>
+    <p>Making your website usable for everyone, including people with disabilities.</p>
+  </section>
+
+  <section class="section">
+    <h2>What is Website Accessibility?</h2>
+    <p>Accessibility ensures that all users, regardless of ability, can access and interact with your website.</p>
+  </section>
+
+  <section class="section">
+    <h2>Features & Benefits</h2>
+    <ul class="features">
+      <li>WCAG compliance</li>
+      <li>Keyboard navigation and screen reader support</li>
+      <li>Inclusive design practices</li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>Use Cases</h2>
+    <ul class="usecases">
+      <li>Educational institutions</li>
+      <li>Public sector sites</li>
+      <li>Health and community services</li>
+    </ul>
+  </section>
+
+  <section class="cta">
+    <button id="lets-work-btn">Let's Work</button>
+  </section>
+
+  <footer>
+    &copy; 2025 The Qlip. All rights reserved.
+  </footer>
+
+  <!-- Feedback Modal -->
+<div id="feedback-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-modal">&times;</span>
+    <h2>Feedback & Complaints</h2>
+    <form id="feedback-form">
+      <input type="text" name="user_name" placeholder="Your Name" required>
+      <input type="email" name="user_email" placeholder="Your Email" required>
+      <textarea name="message" rows="5" placeholder="Your Feedback or Complaint" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+  </div>
+</div>
+<!-- Let's Work Modal -->
+<div id="lets-work-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-work-modal">&times;</span>
+    <h2>Let's Work Together</h2>
+    <form id="lets-work-form">
+      <input type="text" name="user_name" placeholder="Your Name" required>
+      <input type="email" name="user_email" placeholder="Your Email" required>
+      <textarea name="message" rows="5" placeholder="Tell us about your project..." required></textarea>
+      <button type="submit">Send Request</button>
+    </form>
+    <div style="text-align: center; margin-top: 1rem;">
+      <p>Or connect via:</p>
+      <a href="tel:+2348156007282" class="social-link"><i class="fas fa-phone-alt"></i></a>
+      <a href="https://wa.me/2347087342882" class="social-link"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://tiktok.com/@the_qlip" class="social-link"><i class="fab fa-tiktok"></i></a>
+      <a href="mailto:theqlipsglobal@gmail.com" class="social-link"><i class="fas fa-envelope"></i></a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
+
+<script>
+    // Get all dropdown links
+    const dropdownLinks = document.querySelectorAll('.dropdown > a');
+  
+    dropdownLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault(); // Prevent "#" from navigating
+  
+        const dropdownMenu = this.nextElementSibling;
+  
+        // Close other open dropdowns first
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+          if (menu !== dropdownMenu) {
+            menu.classList.remove('show');
+          }
+        });
+  
+        // Toggle the clicked dropdown
+        dropdownMenu.classList.toggle('show');
+      });
+    });
+  
+    // Optional: Close dropdown when clicking outside
+    window.addEventListener('click', function(e) {
+      if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+          menu.classList.remove('show');
+        });
+      }
+    });
+  </script>
+
+  <!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  emailjs.init("DVlpv6WkJuRl2RWLZ"); // Replace with your EmailJS user ID
+</script>
+
+<!-- Feedback Modal Script -->
+<script>
+  const feedbackLink = document.getElementById('feedback-link');
+  const modal = document.getElementById('feedback-modal');
+  const closeModal = document.getElementById('close-modal');
+  const form = document.getElementById('feedback-form');
+
+  feedbackLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    modal.style.display = 'block';
+  });
+
+  closeModal.addEventListener('click', function() {
+    modal.style.display = 'none';
+  });
+
+  window.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    emailjs.sendForm("service_grblnof", "template_vw26jo9", this)
+      .then(function() {
+        alert('Feedback sent successfully!');
+        form.reset();
+        modal.style.display = 'none';
+      }, function(error) {
+        alert('Failed to send feedback.');
+        console.error(error);
+      });
+  });
+</script>
+
+<!-- Let's Work Modal Script -->
+<script>
+  const letsWorkBtn = document.getElementById('lets-work-btn');
+  const letsWorkModal = document.getElementById('lets-work-modal');
+  const closeWorkModal = document.getElementById('close-work-modal');
+  const letsWorkForm = document.getElementById('lets-work-form');
+
+  letsWorkBtn.addEventListener('click', function () {
+    letsWorkModal.style.display = 'block';
+  });
+
+  closeWorkModal.addEventListener('click', function () {
+    letsWorkModal.style.display = 'none';
+  });
+
+  window.addEventListener('click', function (e) {
+    if (e.target === letsWorkModal) {
+      letsWorkModal.style.display = 'none';
+    }
+  });
+
+  letsWorkForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    emailjs.sendForm("service_grblnof", "template_vw26jo9", this)
+      .then(function () {
+        alert('Request sent successfully!');
+        letsWorkForm.reset();
+        letsWorkModal.style.display = 'none';
+      }, function (error) {
+        alert('Failed to send request.');
+        console.error(error);
+      });
+  });
+</script>
+<script>
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const closeMobileMenu = document.getElementById('close-mobile-menu');
+
+  hamburger.addEventListener('click', () => {
+    mobileMenu.classList.add('show');
+    hamburger.style.display = 'none'; // hide hamburger
+  });
+
+  closeMobileMenu.addEventListener('click', () => {
+    mobileMenu.classList.remove('show');
+    hamburger.style.display = 'block'; // show hamburger
+  });
+
+  window.addEventListener('click', (e) => {
+    if (!mobileMenu.contains(e.target) && !hamburger.contains(e.target)) {
+      mobileMenu.classList.remove('show');
+      hamburger.style.display = 'block'; // show hamburger
+    }
+  });
+
+  // Feedback modal trigger from mobile menu
+  const feedbackLinkMobile = document.getElementById('feedback-link-mobile');
+  feedbackLinkMobile.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('feedback-modal').style.display = 'block';
+    mobileMenu.classList.remove('show');
+    hamburger.style.display = 'block'; // show hamburger
+  });
+</script>
+
+  

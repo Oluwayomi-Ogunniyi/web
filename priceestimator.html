@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="The Qlip Price Estimator - Calculate professional quotes with ease and precision.">
+    <title>The Qlip - Price Estimator & Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* Global Styles - Adjusted for consistency */
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: #002e22;
+            color: #115e57;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: hsl(165, 94%, 87%);
+            color: #002e22;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header-logo img {
+            height: 70px;
+            width: auto;
+        }
+
+        .header-title {
+            font-size: 1.7em;
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-nav a {
+            color: #e5fcfb;
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 1.2em;
+        }
+
+        .back-icon {
+            position: static;
+            padding: 10px 12px;
+            background-color: #00412d;
+            color: #e0fdf8;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .back-icon:hover {
+            transform: scale(1.1);
+            background-color: #007f66;
+        }
+
+        .home-icon {
+            position: static;
+            padding: 10px 12px;
+            background-color: #00412d;
+            color: #e0fdf8;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .home-icon:hover {
+            transform: scale(1.1);
+            background-color: #007f66;
+        }
+
+        .home-icon i, .back-icon i {
+            margin: 0;
+        }
+
+        /* Main Content Section */
+        main {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            padding: 20px;
+            margin-top: 100px;
+            flex: 1;
+        }
+
+        /* Estimator Section */
+        .tool-card {
+            background: #ffffff;
+            max-width: 400px;
+            padding: 30px;
+            margin: 15px;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .tool-card h2 {
+            color: #059669;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.5em;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-top: 15px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.95em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0 15px 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background: #f9fafb;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .tool-card button {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            font-size: 1em;
+            font-weight: 500;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .tool-card button:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+        }
+
+        #total {
+            font-weight: 700;
+            margin-top: 20px;
+            color: #059669;
+            font-size: 1.2em;
+            text-align: center;
+            background: #f0fdf4;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #059669;
+        }
+
+        /* Add-ons */
+        .addons {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .addons label {
+            margin-top: 0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            font-weight: 400;
+            cursor: pointer;
+        }
+
+        .addons input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        /* Summary */
+        #summary {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        #summary strong {
+            color: #059669;
+        }
+
+        /* Calculator Section */
+        .calculator {
+            background: #ffffff;
+            max-width: 320px;
+            margin: 15px;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .calculator:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .calculator h2 {
+            text-align: center;
+            color: #047857;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.5em;
+        }
+
+        .calc-display {
+            width: 100%;
+            height: 60px;
+            text-align: right;
+            font-size: 1.4em;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: #f9fafb;
+            font-weight: 500;
+            box-sizing: border-box;
+        }
+
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .calc-buttons button {
+            padding: 15px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            font-weight: 500;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .calc-buttons button:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            transform: translateY(-2px);
+        }
+
+        .calc-buttons button:nth-child(17) { /* = button */
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+
+        .calc-buttons button:nth-child(17):hover {
+            background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+        }
+
+        .calc-buttons button:last-child { /* C button */
+            grid-column: span 4;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .calc-buttons button:last-child:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: #222;
+            color: #e5fcfb;
+            text-align: center;
+            padding: 10px;
+            margin-top: auto;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            main {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px;
+            }
+
+            .tool-card, .calculator {
+                max-width: 100%;
+                margin: 10px 0;
+            }
+
+            .header-title {
+                font-size: 1.2em;
+            }
+
+            .header-logo img {
+                height: 60px;
+            }
+
+            .header-nav a {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <noscript>
+        <div style="background: #fff3cd; padding: 1em; text-align: center; font-size: 0.95em;">
+            <strong>Notice:</strong> This site requires JavaScript for full functionality. Please enable it in your browser.
+        </div>
+    </noscript>
+
+    <header>
+        <div class="header-logo">
+            <img src="images/The Qlip.png" alt="The Qlip" class="logo-image" />
+        </div>
+        <h1 class="header-title">Price Estimator & Calculator</h1>
+        <div class="header-nav">
+            <a href="javascript:history.back()" title="Back" class="back-icon"><i class="fas fa-arrow-left"></i></a>
+            <a href="index.html" class="home-icon" aria-label="Back to Home"><i class="fas fa-home"></i></a>
+        </div>
+    </header>
+
+    <main>
+        <!-- PRICE ESTIMATOR -->
+        <div class="tool-card">
+            <h2>🧮 Price Estimator</h2>
+
+            <label for="estimatorName">Estimator Name (Company/Person):</label>
+            <input type="text" id="estimatorName" placeholder="Enter your name or company">
+
+            <label for="serviceType">Service Type:</label>
+            <select id="serviceType">
+                <option value="">Select Service</option>
+                <option value="tailoring">Fashion Service</option>
+                <option value="carpentry">Furniture Service</option>
+                <option value="plumbing">Plumbing Service</option>
+                <option value="electrical">Electrical Service</option>
+            </select>
+
+            <label for="material">Material Cost (₦):</label>
+            <input type="number" id="material" placeholder="Enter cost" min="0">
+
+            <label for="hours">Labor Hours:</label>
+            <input type="number" id="hours" placeholder="Enter hours" min="0">
+
+            <label for="rate">Rate per Hour (₦):</label>
+            <input type="number" id="rate" placeholder="Enter rate" min="0">
+
+            <label for="workers">Number of Workers:</label>
+            <input type="number" id="workers" value="1" min="1">
+
+            <label for="delivery">Delivery / Transportation Cost (₦):</label>
+            <input type="number" id="delivery" placeholder="Enter cost" min="0">
+
+            <label for="markup">Markup / Profit Margin (%):</label>
+            <input type="number" id="markup" placeholder="Enter percentage" min="0" max="100">
+
+            <label for="discount">Discount (%):</label>
+            <input type="number" id="discount" placeholder="Enter discount" min="0" max="100">
+
+            <label>Add-ons:</label>
+            <div class="addons">
+                <label><input type="checkbox" class="addon" value="500"> Zipper / Buttons (₦500)</label>
+                <label><input type="checkbox" class="addon" value="1500"> Finishing Paint (₦1500)</label>
+                <label><input type="checkbox" class="addon" value="2000"> Extra Material (₦2000)</label>
+            </div>
+
+            <button onclick="calculateEstimate()">Calculate Estimate</button>
+
+            <button onclick="downloadPDF()">📄 Download PDF</button>
+
+            <p id="total"></p>
+            <div id="summary"></div>
+        </div>
+
+        <!-- CALCULATOR -->
+        <div class="calculator">
+            <h2>🧮 Quick Calculator</h2>
+            <input type="text" id="calc-display" class="calc-display" disabled>
+            <div class="calc-buttons">
+                <button onclick="appendCalc('7')">7</button>
+                <button onclick="appendCalc('8')">8</button>
+                <button onclick="appendCalc('9')">9</button>
+                <button onclick="appendCalc('/')">÷</button>
+
+                <button onclick="appendCalc('4')">4</button>
+                <button onclick="appendCalc('5')">5</button>
+                <button onclick="appendCalc('6')">6</button>
+                <button onclick="appendCalc('*')">×</button>
+
+                <button onclick="appendCalc('1')">1</button>
+                <button onclick="appendCalc('2')">2</button>
+                <button onclick="appendCalc('3')">3</button>
+                <button onclick="appendCalc('-')">−</button>
+
+                <button onclick="appendCalc('0')">0</button>
+                <button onclick="appendCalc('.')">.</button>
+                <button onclick="calculateCalc()">=</button>
+                <button onclick="appendCalc('+')">+</button>
+
+                <button onclick="clearCalc()">C</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 The Qlip. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let currentEstimate = {}; // Store current estimate data
+
+        function calculateEstimate() {
+            const estimatorName = document.getElementById('estimatorName').value || 'Unnamed Estimator';
+            const serviceType = document.getElementById('serviceType').value || 'General';
+            const material = parseFloat(document.getElementById('material').value) || 0;
+            const hours = parseFloat(document.getElementById('hours').value) || 0;
+            const rate = parseFloat(document.getElementById('rate').value) || 0;
+            const workers = parseInt(document.getElementById('workers').value) || 1;
+            const delivery = parseFloat(document.getElementById('delivery').value) || 0;
+            const markup = parseFloat(document.getElementById('markup').value) || 0;
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+
+            // Add-ons
+            let addonsTotal = 0;
+            document.querySelectorAll('.addon:checked').forEach(addon => {
+                addonsTotal += parseFloat(addon.value);
+            });
+
+            const labor = hours * rate * workers;
+            let total = material + labor + delivery + addonsTotal;
+
+            // Apply markup
+            total += (total * markup / 100);
+
+            // Apply discount
+            total -= (total * discount / 100);
+
+            // Store for sharing (use plain numbers for PDF compatibility)
+            currentEstimate = {
+                estimatorName,
+                serviceType,
+                material,
+                labor,
+                delivery,
+                addonsTotal,
+                markup,
+                discount,
+                total,
+                date: new Date().toLocaleDateString('en-GB') // DD/MM/YYYY for consistency
+            };
+
+            document.getElementById('total').innerText = `Estimated Total: ₦${total.toLocaleString('en-NG')}`;
+
+            // Summary (keep ₦ in HTML)
+            document.getElementById('summary').innerHTML = `
+                <hr style="border: none; height: 1px; background: #e2e8f0; margin: 15px 0;">
+                <strong>Estimate Details:</strong><br>
+                Estimator: ${estimatorName}<br>
+                Service: ${serviceType}<br>
+                Date: ${currentEstimate.date}<br><br>
+                <strong>Breakdown:</strong><br><br>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9em;">
+                    <span>Material:</span><span style="text-align: right;">₦${material.toLocaleString('en-NG')}</span>
+                    <span>Labor:</span><span style="text-align: right;">₦${labor.toLocaleString('en-NG')}</span>
+                    <span>Delivery:</span><span style="text-align: right;">₦${delivery.toLocaleString('en-NG')}</span>
+                    <span>Add-ons:</span><span style="text-align: right;">₦${addonsTotal.toLocaleString('en-NG')}</span>
+                    <span>Markup:</span><span style="text-align: right;">${markup}%</span>
+                    <span>Discount:</span><span style="text-align: right;">${discount}%</span>
+                </div>
+                <hr style="border: none; height: 1px; background: #e2e8f0; margin: 15px 0;">
+                <div style="text-align: center; font-size: 1.1em; color: #059669;">
+                    <strong>Total: ₦${total.toLocaleString('en-NG')}</strong>
+                </div>
+            `;
+        }
+
+        function downloadPDF() {
+            if (!currentEstimate.total) {
+                alert('Please calculate an estimate first.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(5, 150, 105);
+            doc.text('Price Estimate', 105, 20, { align: 'center' });
+
+            // Details (left-aligned, clean layout)
+            doc.setFontSize(12);
+            doc.setTextColor(55, 65, 81);
+            doc.text(`Estimator: ${currentEstimate.estimatorName}`, 20, 40);
+            doc.text(`Service: ${currentEstimate.serviceType}`, 20, 50);
+            doc.text(`Date: ${currentEstimate.date}`, 20, 60);
+
+            // Breakdown header
+            doc.setFontSize(14);
+            doc.text('Breakdown:', 20, 80);
+
+            // Breakdown items (plain numbers, no ₦ to avoid encoding issues)
+            doc.setFontSize(10);
+            doc.text(`Material: ${currentEstimate.material.toLocaleString('en-US')}`, 20, 95); // en-US for safe comma formatting
+            doc.text(`Labor: ${currentEstimate.labor.toLocaleString('en-US')}`, 20, 105);
+            doc.text(`Delivery: ${currentEstimate.delivery.toLocaleString('en-US')}`, 20, 115);
+            doc.text(`Add-ons: ${currentEstimate.addonsTotal.toLocaleString('en-US')}`, 20, 125);
+            doc.text(`Markup: ${currentEstimate.markup}%`, 20, 135);
+            doc.text(`Discount: ${currentEstimate.discount}%`, 20, 145);
+
+            // Total (centered, bold)
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(5, 150, 105);
+            doc.text(`Total: ${currentEstimate.total.toLocaleString('en-US')}`, 105, 165, { align: 'center' });
+            doc.setFont(undefined, 'normal'); // Reset font
+
+            // Footer
+            doc.setFontSize(10);
+            doc.setTextColor(107, 114, 128);
+            doc.text('Generated with Price Estimator Tool by The Qlip', 105, 195, { align: 'center' });
+
+            // Save with clean filename
+            const cleanName = currentEstimate.estimatorName.replace(/\s+/g, '_').toLowerCase();
+            doc.save(`Estimate_${cleanName}_${currentEstimate.date.replace(/\//g, '_')}.pdf`);
+        }
+
+        // Real-time calculation for estimator
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('#material, #hours, #rate, #workers, #delivery, #markup, #discount, .addon, #estimatorName, #serviceType').forEach(el => {
+                el.addEventListener('input', calculateEstimate);
+                el.addEventListener('change', calculateEstimate);
+            });
+        });
+
+        /* Calculator Logic */
+        let calcDisplay = document.getElementById('calc-display');
+
+        function appendCalc(value) {
+            if (calcDisplay.value === 'Error') calcDisplay.value = '';
+            calcDisplay.value += value;
+        }
+
+        function clearCalc() {
+            calcDisplay.value = '';
+        }
+
+        function calculateCalc() {
+            try {
+                // Safer eval replacement for basic ops
+                let expression = calcDisplay.value
+                    .replace(/×/g, '*')
+                    .replace(/÷/g, '/')
+                    .replace(/−/g, '-');
+                calcDisplay.value = eval(expression);
+            } catch {
+                calcDisplay.value = 'Error';
+            }
+        }
+    </script>
+</body>
+</html>

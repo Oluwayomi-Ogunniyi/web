@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore cutting-edge tech updates, AI in education, and more on this globally inspired tech blog.">
+  <title>Tech Horizon Blog</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.15/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Dropdown menu styles */
+    .dropdown { position: relative; }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      background-color: #ecf0f1;
+      box-shadow: 0 4px 8px rgba(44, 62, 80, 0.1);
+      z-index: 10;
+      min-width: 120px;
+      border-radius: 4px;
+      top: 100%;
+      left: 0;
+    }
+    .dropdown.active .dropdown-menu { display: block; }
+    .dropdown-menu li {
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #8e44ad;
+    }
+    .dropdown-menu li:hover,
+    .dropdown-menu li:active {
+      background-color: #f1c40f;
+      color: #2c3e50;
+    }
+
+    /* Body background */
+    body {
+      background: linear-gradient(to bottom, #ecf0f1, #dcdde1);
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    /* Preserve whitespace for post excerpts */
+    .preserve-whitespace {
+      white-space: pre-wrap;
+    }
+
+    /* Responsive clipped image */
+    .clipped-image {
+      transform: scale(0.9);
+      transform-origin: top;
+      display: block;
+      padding-top: -20px;
+      transform: translateY(-25%);
+    }
+
+    /* Responsive media */
+    .responsive-media {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      height: 0;
+      overflow: hidden;
+    }
+    .responsive-media iframe,
+    .responsive-media video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Disclaimer styles */
+    .disclaimer {
+      width: 100%;
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      padding: 0.5rem 0;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+      overflow: hidden;
+      white-space: nowrap;
+      margin-bottom: 0.5rem;
+    }
+    .disclaimer-text {
+      display: inline-block;
+      animation: scroll 15s linear infinite;
+    }
+    @keyframes scroll {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* Header container */
+    .header-container {
+      position: relative;
+      padding-right: 2.5rem;
+      align-items: center;
+    }
+
+    /* Fancy CSS Hamburger Menu Icon - 2.5 lines style */
+    .hamburger {
+      display: none;
+      position: relative;
+      width: 30px;
+      height: 24px;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin-left: auto;
+      z-index: 1001;
+      transform: translateY(-25%);
+      transition: transform 0.3s ease;
+      align-self: center;
+      margin-top: -40px;
+      padding-bottom: 10px;
+    }
+    .hamburger:hover {
+      transform: scale(1.1);
+    }
+    .hamburger span {
+      display: block;
+      position: absolute;
+      height: 3px;
+      background: #ecf0f1;
+      border-radius: 3px;
+      opacity: 1;
+      left: 0;
+      transition: 0.25s ease-in-out;
+    }
+    .hamburger span:nth-child(1) {
+      top: 0;
+      width: 100%;
+    }
+    .hamburger span:nth-child(2) {
+      top: 9px;
+      width: 60%; /* Shorter middle line for "2.5 lines" effect */
+      left: 20%;
+    }
+    .hamburger span:nth-child(3) {
+      top: 18px;
+      width: 100%;
+    }
+    .hamburger.active span:nth-child(1) {
+      top: 9px;
+      transform: rotate(135deg);
+      width: 100%;
+    }
+    .hamburger.active span:nth-child(2) {opacity: 0; left: -60px;}
+    .hamburger.active span:nth-child(3) {
+      top: 9px;
+      transform: rotate(-135deg);
+      width: 100%;
+    }
+    .hamburger::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(241, 196, 15, 0.2);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.3s ease;
+    }
+    .hamburger.active::before {
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.7; }
+      70% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+      100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+    }
+
+    /* Mobile Menu */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 280px;
+      height: 100%;
+      background: linear-gradient(to bottom, #2c3e50, #34495e);
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      z-index: 1000;
+      padding: 5rem 2rem 2rem;
+      box-shadow: -4px 0 15px rgba(0,0,0,0.3);
+      overflow-y: auto;
+    }
+    .mobile-menu.active {
+      transform: translateX(0);
+    }
+    .mobile-menu h3 {
+      color: #ecf0f1;
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin: 1.5rem 0 1rem;
+      border-bottom: 1px solid #f1c40f;
+      padding-bottom: 0.5rem;
+    }
+    .mobile-menu a {
+      display: block;
+      color: #ecf0f1;
+      padding: 0.75rem 0;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+    .mobile-menu a:hover,
+    .mobile-menu a.active {
+      color: #f1c40f;
+      border-left-color: #f1c40f;
+      padding-left: 1rem;
+    }
+    /* Mobile Search in Menu */
+    .mobile-search {
+      margin-bottom: 2rem;
+      padding: 0.5rem;
+      background: rgba(236, 240, 241, 0.1);
+      border: 1px solid #f1c40f;
+      border-radius: 4px;
+    }
+    .mobile-search input {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      background: transparent;
+      color: #ecf0f1;
+      font-size: 1rem;
+      outline: none;
+    }
+    .mobile-search input::placeholder {
+      color: #bdc3c7;
+    }
+    .mobile-menu-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      transition: opacity 0.3s ease;
+    }
+    .mobile-menu.active + .mobile-menu-backdrop {
+      display: block;
+    }
+
+    /* Media queries for mobile */
+    @media (max-width: 640px) {
+      .header-container nav {
+        display: none;
+      }
+      .hamburger {
+        display: block;
+      }
+      .mobile-menu {
+        display: block;
+      }
+      .container {
+        flex-direction: column;
+        padding: 0 1rem;
+      }
+      .main-content, .sidebar {
+        width: 100% !important;
+        margin: 0;
+      }
+      .dropdown-menu {
+        min-width: 100px;
+        font-size: 0.8rem;
+      }
+      .dropdown-menu li {
+        padding: 0.4rem 0.6rem;
+      }
+      .header-logo img {
+        height: 4rem; /* Moderate size, aligned with hamburger */
+        align-self: center;
+      }
+      .disclaimer {
+        font-size: 0.75rem;
+        padding: 0.4rem 0;
+      }
+      .header-container {
+        padding-right: 1rem;
+        padding: 1rem; /* Moderate header padding: 1rem top/bottom, 1rem left/right */
+        height: auto;
+        min-height: 5rem; /* Moderate height, not too thin */
+      }
+      /* Mobile header: Only logo and hamburger, aligned on same baseline */
+      .header-container > div:first-child {
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .header-container .flex.items-center.space-x-3 > div:not(:first-child) {
+        display: none;
+      }
+    }
+
+    @media (min-width: 641px) and (max-width: 768px) {
+      .dropdown-menu {
+        min-width: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const App = () => {
+      const [category, setCategory] = useState("all");
+      const [searchTerm, setSearchTerm] = useState("");
+      const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+      const [showLoginModal, setShowLoginModal] = useState(false);
+      const [loginType, setLoginType] = useState("admin");
+      const [username, setUsername] = useState("");
+      const [password, setPassword] = useState("");
+      const [loginAttempts, setLoginAttempts] = useState(0);
+      const [isAccountLocked, setIsAccountLocked] = useState(localStorage.getItem("isLandingAccountLocked") === "true");
+      const [posts, setPosts] = useState(JSON.parse(localStorage.getItem("posts")) || [
+        { id: 1, category: "AI & Education", title: "How AI is Revolutionizing Classrooms", excerpt: "Explore AI's role in personalized learning.\n\nNew paragraph here.", date: "2025-07-29", media: "", hidden: false },
+        { id: 2, category: "Tech Updates", title: "Latest 5G Breakthroughs in 2025", excerpt: "Discover the newest advancements in 5G tech.\n\t- Faster speeds\n\t- Better connectivity", date: "2025-07-28", media: "", hidden: false },
+        { id: 3, category: "Innovation", title: "The Future of Quantum Computing", excerpt: "A deep dive into quantum technology.\n\nThis is a new paragraph.\n\t- Tabbed point", date: "2025-07-27", media: "", hidden: false }
+      ]);
+      const [comments, setComments] = useState(JSON.parse(localStorage.getItem("comments")) || {});
+      const [auditLog, setAuditLog] = useState(JSON.parse(localStorage.getItem("auditLog") || "[]"));
+      const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+      const categories = ["AI & Education", "Tech Updates", "Innovation", "Gadgets"];
+
+      // Combined filter for category and search
+      const filteredPosts = posts.filter(post => !post.hidden)
+        .filter(post => category === "all" || post.category === category)
+        .filter(post => 
+          post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          post.category.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+      useEffect(() => {
+        localStorage.setItem("posts", JSON.stringify(posts));
+        localStorage.setItem("comments", JSON.stringify(comments));
+        localStorage.setItem("auditLog", JSON.stringify(auditLog.slice(-100)));
+      }, [posts, comments, auditLog]);
+
+      useEffect(() => {
+        const handleLogoClick = (e) => {
+          if (e.ctrlKey) {
+            setShowLoginModal(true);
+          }
+        };
+        const logoElement = document.querySelector(".header-logo");
+        if (logoElement) {
+          logoElement.addEventListener("click", handleLogoClick);
+          return () => logoElement.removeEventListener("click", handleLogoClick);
+        }
+      }, []);
+
+      const logAction = (action, details) => {
+        const newLog = { date: new Date().toLocaleString("en-US", { timeZone: "Africa/Lagos" }), action, details };
+        setAuditLog([...auditLog, newLog].slice(-100));
+      };
+
+      const handleLogin = () => {
+        if (isAccountLocked) {
+          logAction("Failed Login", `Account locked for ${loginType} login with username "${username}"`);
+          alert("Account is locked due to multiple failed attempts. Contact support.");
+          return;
+        }
+
+        if (loginType === "admin") {
+          const defaultAdminUsername = "admin";
+          const defaultAdminPassword = "secure2025";
+
+          if (username === defaultAdminUsername && password === defaultAdminPassword) {
+            setLoginAttempts(0);
+            localStorage.setItem("isAdminLoggedIn", "true");
+            logAction("Redirect to Admin Login", `Default admin "${username}" authenticated, redirecting to admin.html`);
+            window.location.href = "admin.html";
+          } else {
+            setLoginAttempts(loginAttempts + 1);
+            logAction("Failed Login", `Attempt ${loginAttempts + 1} for default admin login with username "${username}"`);
+            alert("Incorrect username or password. Try again.");
+            if (loginAttempts + 1 >= 2) {
+              setIsAccountLocked(true);
+              localStorage.setItem("isLandingAccountLocked", "true");
+              logAction("Account Locked", `Landing page account locked for ${loginType} login with username "${username}"`);
+              alert("Account locked due to multiple failed attempts. Contact support.");
+            }
+          }
+        } else {
+          const devUsername = localStorage.getItem("landingDevUsername") || "devuser";
+          const devPassword = localStorage.getItem("landingDevPassword") || "TokillaMonkey25";
+
+          if (username === devUsername && password === devPassword) {
+            setLoginAttempts(0);
+            localStorage.setItem("isDevLoggedIn", "true");
+            logAction("Redirect to Developer Login", `Developer "${username}" authenticated, redirecting to developer.html`);
+            window.location.href = "developer.html";
+          } else {
+            setLoginAttempts(loginAttempts + 1);
+            logAction("Failed Login", `Attempt ${loginAttempts + 1} for developer login with username "${username}"`);
+            alert("Incorrect username or password. Try again.");
+            if (loginAttempts + 1 >= 2) {
+              setIsAccountLocked(true);
+              localStorage.setItem("isLandingAccountLocked", "true");
+              logAction("Account Locked", `Landing page account locked for ${loginType} login with username "${username}"`);
+              alert("Account locked due to multiple failed attempts. Contact support.");
+            }
+          }
+        }
+      };
+
+      // Post Detail Page
+      if (window.location.pathname.startsWith("/post/")) {
+        const postId = parseInt(window.location.pathname.split("/post/")[1]);
+        const post = posts.find(p => p.id === postId && !p.hidden);
+        return (
+          <div className="font-sans text-[#8e44ad] min-h-screen">
+            <header className="bg-[#2c3e50] text-[#ecf0f1] sticky top-0 z-20 shadow-md">
+              <div className="container mx-auto flex items-center justify-between relative header-container">
+                <div className="header-logo">
+                  <img src="images/The Qlip2.png" alt="Tech Horizon" className="h-14" />
+                </div>
+                <button className={`hamburger ${isMenuOpen ? "active" : ""}`} onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </button>
+              </div>
+              <div className={`mobile-menu ${isMenuOpen ? "active" : ""}`}>
+                <div className="mobile-search">
+                  <input 
+                    type="text" 
+                    placeholder="Search posts..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <h3>CATEGORIES</h3>
+                <a href="#" onClick={() => { setCategory("all"); setIsMenuOpen(false); window.location.href = "/"; }} className={category === "all" ? "active" : ""}>All</a>
+                {categories.map(cat => (
+                  <a key={cat} href="#" onClick={() => { setCategory(cat); setIsMenuOpen(false); window.location.href = "/"; }} className={category === cat ? "active" : ""}>{cat}</a>
+                ))}
+                <h3>TECH SECTIONS</h3>
+                <a href="/" onClick={() => setIsMenuOpen(false)}>Home</a>
+                <a href="#ai-innovations" onClick={() => setIsMenuOpen(false)}>AI Innovations</a>
+                <a href="#tech-trends" onClick={() => setIsMenuOpen(false)}>Tech Trends</a>
+                <a href="#gadgets" onClick={() => setIsMenuOpen(false)}>Gadgets</a>
+                <a href="#software-dev" onClick={() => setIsMenuOpen(false)}>Software Dev</a>
+                <a href="#about" onClick={() => setIsMenuOpen(false)}>About</a>
+                <a href="#contact" onClick={() => setIsMenuOpen(false)}>Contact</a>
+              </div>
+              <div className={`mobile-menu-backdrop ${isMenuOpen ? "active" : ""}`} onClick={() => setIsMenuOpen(false)}></div>
+            </header>
+            <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row">
+              <div className="main-content w-full md:w-2/3">
+                {post ? (
+                  <>
+                    <h1 className="text-3xl font-bold text-[#2c3e50] mb-4">{post.title}</h1>
+                    <p className="text-sm text-[#8e44ad] mb-4">{post.date} | {post.category}</p>
+                    <p className="text-base text-[#8e44ad] mb-4 preserve-whitespace">{post.excerpt}</p>
+                    {post.media && (
+                      <div className="mb-4 responsive-media max-w-full mx-auto">
+                        {post.media.match(/\.(mp4|webm|ogg)$/i) ? (
+                          <video src={post.media} controls className="rounded-lg" />
+                        ) : post.media.includes("youtube.com") ? (
+                          <iframe
+                            src={post.media.replace("watch?v=", "embed/")}
+                            title={post.title}
+                            frameBorder="0"
+                            allow="autoplay; encrypted-media"
+                            allowFullScreen
+                            className="rounded-lg"
+                          ></iframe>
+                        ) : (
+                          <img src={post.media} alt={post.title} className="max-w-full h-auto mx-auto object-contain rounded-lg clipped-image" />
+                        )}
+                      </div>
+                    )}
+                    <div className="bg-[#ecf0f1] p-4 rounded-lg shadow-md mt-6 max-w-full sm:max-w-md mx-auto">
+                      <h3 className="text-xl font-semibold text-[#2c3e50] mb-4">Comments</h3>
+                      <div className="mb-4">
+                        <textarea
+                          placeholder="Type comments here..."
+                          onBlur={(e) => {
+                            if (e.target.value.trim()) {
+                              let commenterName = "Guest";
+                              const gmail = prompt("Optional: Enter your Gmail for identification (leave blank for Guest)");
+                              if (gmail && gmail.match(/@gmail\.com$/)) {
+                                commenterName = gmail.split('@')[0];
+                              }
+                              const comment = e.target.value.trim();
+                              setComments({
+                                ...comments,
+                                [post.id]: [...(comments[post.id] || []), { name: commenterName, comment, date: new Date().toLocaleString("en-US", { timeZone: "Africa/Lagos" }) }]
+                              });
+                              logAction("Add Comment", `User "${commenterName}" commented on post "${post.title}"`);
+                              e.target.value = "";
+                            }
+                          }}
+                          className="w-full p-3 border border-[#f1c40f] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f1c40f] transition resize-none text-base"
+                          rows="3"
+                        ></textarea>
+                      </div>
+                      <div className="text-sm text-[#8e44ad]">
+                        {comments[post.id]?.map((c, i) => (
+                          <div key={i} className="border-t pt-2">
+                            <strong>{c.name}</strong> ({c.date}): {c.comment}
+                          </div>
+                        )) || <p className="text-[#8e44ad]">No comments yet.</p>}
+                      </div>
+                    </div>
+                    <a href="/" className="text-[#f1c40f] hover:underline mt-4 inline-block text-base">Back to Posts</a>
+                  </>
+                ) : (
+                  <div className="text-[#8e44ad] text-center pt-20 text-base">Post not found or not available.</div>
+                )}
+              </div>
+              <div className="sidebar w-1/3 ml-4 hidden md:block">
+                <div className="bg-[#ecf0f1] p-4 rounded-lg shadow-md mb-4">
+                  <h3 className="text-xl font-bold text-[#2c3e50] mb-2">Top Tech News</h3>
+                  {posts.slice(0, 3).map(post => (
+                    <div key={post.id} className="mb-2">
+                      <a href={`/post/${post.id}`} className="text-[#f1c40f] hover:underline text-sm">{post.title}</a>
+                      <p className="text-xs text-[#8e44ad]">{post.date}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-[#ecf0f1] p-4 rounded-lg shadow-md mb-4">
+                  <h3 className="text-xl font-bold text-[#2c3e50] mb-2">Trending Tech</h3>
+                  {posts.slice(0, 2).map(post => (
+                    <div key={post.id} className="mb-2">
+                      <a href={`/post/${post.id}`} className="text-[#f1c40f] hover:underline text-sm">{post.title}</a>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-[#ecf0f1] p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-bold text-[#2c3e50] mb-2">Latest Stories</h3>
+                  <input type="text" placeholder="Search..." className="w-full p-2 border border-[#f1c40f] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f1c40f] transition text-sm" />
+                </div>
+              </div>
+            </div>
+            <div className="disclaimer">
+              <span className="disclaimer-text">This blog page is a demo and still under maintenance. Content is not yet authentic. Kindly use the Home button to return to The Qlip's official page.</span>
+            </div>
+            <footer className="py-6 bg-[#2c3e50] text-[#ecf0f1] text-center text-sm">
+              <p>&copy; 2025 Tech Horizon. All rights reserved. Last updated: Fri, Sep 19, 2025, 03:01 PM WAT</p>
+            </footer>
+          </div>
+        );
+      }
+
+      // Main Blog Page
+      return (
+        <div className="font-sans text-[#8e44ad] min-h-screen">
+          <header className="bg-[#2c3e50] text-[#ecf0f1] sticky top-0 z-20 shadow-md">
+            <div className="container mx-auto flex items-center justify-between relative header-container">
+              <div className="header-logo">
+                <img src="images/The Qlip2.png" alt="Tech Horizon" className="h-14" />
+              </div>
+              <nav className="flex space-x-6">
+                <a href="#home" className="hover:text-[#f1c40f] transition">Home</a>
+                <div className={`dropdown relative ${isCategoryOpen ? "active" : ""}`}>
+                  <a href="#categories" className="hover:text-[#f1c40f] transition flex items-center" onClick={(e) => { e.preventDefault(); setIsCategoryOpen(!isCategoryOpen); }}>
+                    Categories <span className="ml-1">&#9662;</span>
+                  </a>
+                  <ul className="dropdown-menu rounded-lg">
+                    <li onClick={() => { setCategory("all"); setIsCategoryOpen(false); }} className="text-[#8e44ad] hover:text-[#2c3e50]">All</li>
+                    {categories.map(cat => (
+                      <li key={cat} onClick={() => { setCategory(cat); setIsCategoryOpen(false); }} className="text-[#8e44ad] hover:text-[#2c3e50]">{cat}</li>
+                    ))}
+                  </ul>
+                </div>
+                <a href="#ai-innovations" className="hover:text-[#f1c40f] transition">AI Innovations</a>
+                <a href="#tech-trends" className="hover:text-[#f1c40f] transition">Tech Trends</a>
+                <a href="#gadgets" className="hover:text-[#f1c40f] transition">Gadgets</a>
+                <a href="#software-dev" className="hover:text-[#f1c40f] transition">Software Dev</a>
+                <a href="#about" className="hover:text-[#f1c40f] transition">About</a>
+                <a href="#contact" className="hover:text-[#f1c40f] transition">Contact</a>
+              </nav>
+              <button className={`hamburger ${isMenuOpen ? "active" : ""}`} onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+            </div>
+            <div className={`mobile-menu ${isMenuOpen ? "active" : ""}`}>
+              <div className="mobile-search">
+                <input 
+                  type="text" 
+                  placeholder="Search posts..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <h3>CATEGORIES</h3>
+              <a href="#" onClick={() => { setCategory("all"); setIsMenuOpen(false); }} className={category === "all" ? "active" : ""}>All</a>
+              {categories.map(cat => (
+                <a key={cat} href="#" onClick={() => { setCategory(cat); setIsMenuOpen(false); }} className={category === cat ? "active" : ""}>{cat}</a>
+              ))}
+              <h3>TECH SECTIONS</h3>
+              <a href="#home" onClick={() => setIsMenuOpen(false)}>Home</a>
+              <a href="#ai-innovations" onClick={() => setIsMenuOpen(false)}>AI Innovations</a>
+              <a href="#tech-trends" onClick={() => setIsMenuOpen(false)}>Tech Trends</a>
+              <a href="#gadgets" onClick={() => setIsMenuOpen(false)}>Gadgets</a>
+              <a href="#software-dev" onClick={() => setIsMenuOpen(false)}>Software Dev</a>
+              <a href="#about" onClick={() => setIsMenuOpen(false)}>About</a>
+              <a href="#contact" onClick={() => setIsMenuOpen(false)}>Contact</a>
+            </div>
+            <div className={`mobile-menu-backdrop ${isMenuOpen ? "active" : ""}`} onClick={() => setIsMenuOpen(false)}></div>
+          </header>
+          <section className="container mx-auto px-4 py-8 flex flex-col md:flex-row">
+            <div className="main-content w-full md:w-2/3">
+              <section id="home" className="mb-8">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold text-[#2c3e50] mb-4">Welcome to Tech Horizon</h1>
+                  <p className="text-lg text-[#8e44ad] mb-6">Your source for cutting-edge tech insights, AI in education, and global innovations.</p>
+                  <a href="#posts" className="bg-[#2c3e50] text-[#ecf0f1] px-6 py-3 rounded-full hover:bg-[#f1c40f] hover:text-[#2c3e50] transition text-base">Explore Posts</a>
+                </div>
+              </section>
+              <section id="posts">
+                <h2 className="text-3xl font-bold text-[#2c3e50] text-center mb-6">Latest Posts</h2>
+                <div className="flex flex-wrap justify-center mb-6 gap-2">
+                  <button onClick={() => setCategory("all")} className={`px-4 py-2 mx-1 rounded text-base ${category === "all" ? "bg-[#2c3e50] text-[#ecf0f1]" : "bg-[#ecf0f1] text-[#8e44ad]"} hover:bg-[#f1c40f] hover:text-[#2c3e50] transition`}>All</button>
+                  {categories.map(cat => (
+                    <button key={cat} onClick={() => setCategory(cat)} className={`px-4 py-2 mx-1 rounded text-base ${category === cat ? "bg-[#2c3e50] text-[#ecf0f1]" : "bg-[#ecf0f1] text-[#8e44ad]"} hover:bg-[#f1c40f] hover:text-[#2c3e50] transition`}>{cat}</button>
+                  ))}
+                </div>
+                <div className="grid grid-cols-1 gap-6">
+                  {filteredPosts.map(post => (
+                    <div key={post.id} className="bg-[#ecf0f1] rounded-lg shadow-md overflow-hidden hover:shadow-lg">
+                      <div className="p-6">
+                        <h3 className="text-xl font-semibold text-[#2c3e50] mb-2">{post.title}</h3>
+                        <p className="text-base text-[#8e44ad] mb-4 preserve-whitespace">{post.excerpt}</p>
+                        <p className="text-sm text-[#8e44ad]">{post.date}</p>
+                        {post.media && (
+                          <div className="mt-2 mb-4 responsive-media">
+                            {post.media.match(/\.(mp4|webm|ogg)$/i) ? (
+                              <video src={post.media} controls className="rounded-lg" />
+                            ) : post.media.includes("youtube.com") ? (
+                              <iframe
+                                src={post.media.replace("watch?v=", "embed/")}
+                                title={post.title}
+                                frameBorder="0"
+                                allow="autoplay; encrypted-media"
+                                allowFullScreen
+                                className="rounded-lg"
+                              ></iframe>
+                            ) : (
+                              <img src="images/The Qlip.png" alt={post.title} className="max-w-full h-auto object-contain rounded-lg clipped-image" />
+                            )}
+                          </div>
+                        )}
+                        <a href={`/post/${post.id}`} className="text-[#f1c40f] hover:underline mt-2 inline-block text-base">Read More</a>
+                      </div>
+                    </div>
+                  ))}
+                  {filteredPosts.length === 0 && <p className="text-[#8e44ad] col-span-full text-center text-base">No posts available matching your search or category.</p>}
+                </div>
+              </section>
+              <section className="mt-8">
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold text-[#2c3e50] mb-6">Tech in Action</h2>
+                  <div className="max-w-full mx-auto responsive-media">
+                    <iframe
+                      src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                      title="Tech Demo"
+                      frameBorder="0"
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                      className="rounded-lg"
+                    ></iframe>
+                  </div>
+                  <p className="mt-4 text-base text-[#8e44ad]"><a href="#posts" className="text-[#f1c40f] hover:underline">Watch More Tech Videos</a></p>
+                </div>
+              </section>
+            </div>
+            <div className="sidebar w-1/3 ml-4 hidden md:block">
+              <div className="bg-[#ecf0f1] p-4 rounded-lg shadow-md mb-4">
+                <h3 className="text-xl font-bold text-[#2c3e50] mb-2">Top Tech News</h3>
+                {posts.slice(0, 3).map(post => (
+                  <div key={post.id} className="mb-2">
+                    <a href={`/post/${post.id}`} className="text-[#f1c40f] hover:underline text-sm">{post.title}</a>
+                    <p className="text-xs text-[#8e44ad]">{post.date}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="bg-[#ecf0f1] p-4 rounded-lg shadow-md mb-4">
+                <h3 className="text-xl font-bold text-[#2c3e50] mb-2">Trending Tech</h3>
+                {posts.slice(0, 2).map(post => (
+                  <div key={post.id} className="mb-2">
+                    <a href={`/post/${post.id}`} className="text-[#f1c40f] hover:underline text-sm">{post.title}</a>
+                  </div>
+                ))}
+              </div>
+              <div className="bg-[#ecf0f1] p-4 rounded-lg shadow-md">
+                <h3 className="text-xl font-bold text-[#2c3e50] mb-2">Latest Stories</h3>
+                <input type="text" placeholder="Search..." className="w-full p-2 border border-[#f1c40f] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f1c40f] transition text-sm" />
+              </div>
+            </div>
+          </section>
+          <div className="disclaimer">
+            <span className="disclaimer-text">This blog page is a demo and still under maintenance. Content is not yet authentic. Kindly use the Home button to return to The Qlip's official page.</span>
+          </div>
+          <footer className="py-6 bg-[#2c3e50] text-[#ecf0f1] text-center text-sm">
+            <p>&copy; 2025 Tech Horizon. All rights reserved. Last updated: Fri, Sep 19, 2025, 03:01 PM WAT</p>
+          </footer>
+          {showLoginModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
+              <div className="bg-[#ecf0f1] p-6 rounded-lg shadow-xl w-full max-w-xs">
+                <div className="header-logo mb-4 text-center">
+                  <img src="images/The Qlip.png" alt="Tech Horizon" className="h-12 mx-auto" />
+                </div>
+                <h2 className="text-xl font-bold text-[#2c3e50] mb-4 text-center">Login</h2>
+                <select
+                  value={loginType}
+                  onChange={(e) => setLoginType(e.target.value)}
+                  className="w-full p-2 mb-4 border border-[#f1c40f] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f1c40f] transition text-sm"
+                  disabled={isAccountLocked}
+                >
+                  <option value="admin">Admin</option>
+                  <option value="developer">Developer</option>
+                </select>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Username"
+                  className="w-full p-2 mb-4 border border-[#f1c40f] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f1c40f] transition text-sm"
+                  disabled={isAccountLocked}
+                />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  className="w-full p-2 mb-4 border border-[#f1c40f] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f1c40f] transition text-sm"
+                  disabled={isAccountLocked}
+                />
+                <div className="flex justify-center space-x-3">
+                  <button
+                    onClick={handleLogin}
+                    className="bg-[#2c3e50] text-[#ecf0f1] px-4 py-2 rounded-lg hover:bg-[#f1c40f] hover:text-[#2c3e50] transition disabled:bg-gray-400 text-sm"
+                    disabled={isAccountLocked}
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => setShowLoginModal(false)}
+                    className="bg-[#ecf0f1] text-[#8e44ad] px-4 py-2 rounded-lg border border-[#f1c40f] hover:bg-[#f1c40f] hover:text-[#2c3e50] transition text-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
+                {isAccountLocked && (
+                  <div className="mt-4 text-center">
+                    <p className="text-[#f1c40f] mb-2 text-sm">Account is locked due to multiple failed attempts.</p>
+                    <p className="text-[#8e44ad] text-sm">Contact support to unlock.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>

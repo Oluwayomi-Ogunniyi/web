@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Developer dashboard for Tech Horizon Blog to manage posts and accounts.">
+  <title>Tech Horizon Developer Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.15/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .dropdown { position: relative; }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      background-color: #e0fdf8;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      z-index: 10;
+      min-width: 160px;
+      border-radius: 4px;
+    }
+    .dropdown.active .dropdown-menu { display: block; }
+    .dropdown-menu li { padding: 0.5rem 1rem; cursor: pointer; }
+    .dropdown-menu li:hover { background-color: #007f66; color: #e5fcfb; }
+    body {
+      background: linear-gradient(to bottom, #e6f0fa, #d1fae5);
+    }
+    .preserve-whitespace {
+      white-space: pre-wrap;
+    }
+    .auto-fit-image-small {
+      width: 24px;
+      max-height: 24px;
+      object-fit: contain;
+      border-radius: 0.5rem;
+    }
+    .audit-log-table {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const DeveloperApp = () => {
+      const [developerLogin, setDeveloperLogin] = useState(false);
+      const [developerUsername, setDeveloperUsername] = useState("");
+      const [developerPassword, setDeveloperPassword] = useState("");
+      const [loginAttempts, setLoginAttempts] = useState(0);
+      const [isAccountLocked, setIsAccountLocked] = useState(localStorage.getItem("isDeveloperAccountLocked") === "true");
+      const [showDeveloperPage, setShowDeveloperPage] = useState(false);
+      const [pendingPosts, setPendingPosts] = useState(JSON.parse(localStorage.getItem("pendingPosts")) || []);
+      const [posts, setPosts] = useState(JSON.parse(localStorage.getItem("posts")) || []);
+      const [newAdminUsername, setNewAdminUsername] = useState("");
+      const [newAdminPassword, setNewAdminPassword] = useState("");
+      const [developerNewPassword, setDeveloperNewPassword] = useState("");
+      const [adminChangeUsername, setAdminChangeUsername] = useState("");
+      const [adminNewPassword, setAdminNewPassword] = useState("");
+      const [adminCredentials, setAdminCredentials] = useState(JSON.parse(localStorage.getItem("adminCredentials")) || [{ username: "admin", password: "secure2025", permissions: ["create_posts", "publish_posts"], suspended: false, createdAt: "2025-08-07" }]);
+      const [selectedPost, setSelectedPost] = useState(null);
+      const [auditLog, setAuditLog] = useState(JSON.parse(localStorage.getItem("auditLog")) || []);
+
+      // Persist data to localStorage
+      useEffect(() => {
+        localStorage.setItem("pendingPosts", JSON.stringify(pendingPosts));
+        localStorage.setItem("posts", JSON.stringify(posts));
+        localStorage.setItem("adminCredentials", JSON.stringify(adminCredentials));
+        localStorage.setItem("auditLog", JSON.stringify(auditLog.slice(-100))); // Limit to last 100 logs
+      }, [pendingPosts, posts, adminCredentials, auditLog]);
+
+      // Check login state on load
+      useEffect(() => {
+        const isLoggedIn = localStorage.getItem("isDeveloperLoggedIn") === "true";
+        setShowDeveloperPage(isLoggedIn);
+        if (!isLoggedIn) {
+          setDeveloperLogin(true);
+        }
+      }, []);
+
+      // Discreet developer login trigger (Ctrl + click on logo)
+      useEffect(() => {
+        const handleLogoClick = (e) => {
+          if (e.ctrlKey) {
+            setDeveloperLogin(true);
+          }
+        };
+        const logoElement = document.querySelector(".header-logo");
+        if (logoElement) {
+          logoElement.addEventListener("click", handleLogoClick);
+          return () => logoElement.removeEventListener("click", handleLogoClick);
+        }
+      }, []);
+
+      const logAction = (action, details) => {
+        const newLog = { date: new Date().toLocaleString(), action, details };
+        setAuditLog([...auditLog, newLog].slice(-100)); // Keep last 100 logs
+      };
+
+      const handleDeveloperLogin = () => {
+        if (isAccountLocked) {
+          alert("Developer account is locked. Use the Unlock button or contact support.");
+          return;
+        }
+
+        const validUsername = localStorage.getItem("developerUsername") || "developer";
+        const validPassword = localStorage.getItem("developerPassword") || "dev2025";
+
+        if (developerUsername === validUsername && developerPassword === validPassword) {
+          setLoginAttempts(0);
+          setShowDeveloperPage(true);
+          setDeveloperLogin(false);
+          localStorage.setItem("isDeveloperLoggedIn", "true");
+          logAction("Login", "Developer logged in successfully");
+          console.log("Developer login successful, showing dashboard...");
+        } else {
+          setLoginAttempts(loginAttempts + 1);
+          logAction("Failed Login", `Attempt ${loginAttempts + 1} with username "${developerUsername}"`);
+          alert("Incorrect username or password. Try again.");
+          if (loginAttempts + 1 >= 2) {
+            setIsAccountLocked(true);
+            localStorage.setItem("isDeveloperAccountLocked", "true");
+            logAction("Account Locked", "Developer account locked due to multiple failed attempts");
+            alert("Developer account locked due to multiple failed attempts. Use the Unlock button or contact support.");
+          }
+        }
+      };
+
+      const handleLogout = () => {
+        setShowDeveloperPage(false);
+        setDeveloperLogin(false);
+        setDeveloperUsername("");
+        setDeveloperPassword("");
+        setLoginAttempts(0);
+        setIsAccountLocked(false);
+        localStorage.removeItem("isDeveloperLoggedIn");
+        localStorage.removeItem("isDeveloperAccountLocked");
+        logAction("Logout", "Developer logged out");
+        window.location.href = "index.html";
+      };
+
+      const handleApprovePost = (post) => {
+        setPendingPosts(pendingPosts.map(p => p.id === post.id ? { ...p, status: "approved" } : p));
+        const notifications = JSON.parse(localStorage.getItem("adminNotifications")) || [];
+        notifications.push({ message: `Your post "${post.title}" has been approved!`, timestamp: new Date().toLocaleString() });
+        localStorage.setItem("adminNotifications", JSON.stringify(notifications));
+        logAction("Approve Post", `Approved post "${post.title}"`);
+        alert(`Post "${post.title}" approved!`);
+      };
+
+      const handleRejectPost = (post) => {
+        setPendingPosts(pendingPosts.filter(p => p.id !== post.id));
+        const notifications = JSON.parse(localStorage.getItem("adminNotifications")) || [];
+        notifications.push({ message: `Your post "${post.title}" has been rejected.`, timestamp: new Date().toLocaleString() });
+        localStorage.setItem("adminNotifications", JSON.stringify(notifications));
+        logAction("Reject Post", `Rejected post "${post.title}"`);
+        alert(`Post "${post.title}" rejected.`);
+      };
+
+      const handleAddAdmin = (e) => {
+        e.preventDefault();
+        const permissions = Array.from(document.querySelectorAll('input[name="permissions"]:checked')).map(input => input.value);
+        if (newAdminUsername && newAdminPassword) {
+          if (adminCredentials.some(cred => cred.username === newAdminUsername)) {
+            logAction("Failed Add Admin", `Attempted to add duplicate username "${newAdminUsername}"`);
+            alert("Username already exists. Choose a different username.");
+            return;
+          }
+          const newAdmin = {
+            username: newAdminUsername,
+            password: newAdminPassword,
+            permissions,
+            suspended: false,
+            createdAt: new Date().toISOString().split('T')[0]
+          };
+          setAdminCredentials([...adminCredentials, newAdmin]);
+          logAction("Add Admin", `Added admin "${newAdminUsername}" with permissions: ${permissions.join(", ") || "none"}`);
+          alert("New admin added successfully!");
+          setNewAdminUsername("");
+          setNewAdminPassword("");
+        } else {
+          logAction("Failed Add Admin", "Missing username or password");
+          alert("Please provide both username and password for the new admin.");
+        }
+      };
+
+      const handleChangeDeveloperPassword = (e) => {
+        e.preventDefault();
+        if (developerNewPassword) {
+          localStorage.setItem("developerPassword", developerNewPassword);
+          logAction("Change Password", "Changed developer password");
+          alert("Developer password updated successfully!");
+          setDeveloperNewPassword("");
+        } else {
+          logAction("Failed Change Password", "No new password provided for developer");
+          alert("Please enter a new password.");
+        }
+      };
+
+      const handleChangeAdminPassword = (e) => {
+        e.preventDefault();
+        if (adminChangeUsername && adminNewPassword) {
+          const adminIndex = adminCredentials.findIndex(cred => cred.username === adminChangeUsername);
+          if (adminIndex === -1) {
+            logAction("Failed Change Admin Password", `Admin username "${adminChangeUsername}" not found`);
+            alert("Admin username not found.");
+            return;
+          }
+          const updatedCredentials = [...adminCredentials];
+          updatedCredentials[adminIndex].password = adminNewPassword;
+          setAdminCredentials(updatedCredentials);
+          logAction("Change Admin Password", `Changed password for admin "${adminChangeUsername}"`);
+          alert(`Password for admin "${adminChangeUsername}" updated successfully!`);
+          setAdminChangeUsername("");
+          setAdminNewPassword("");
+        } else {
+          logAction("Failed Change Admin Password", "Missing username or new password");
+          alert("Please provide both username and new password.");
+        }
+      };
+
+      const handleUnlockAccount = () => {
+        localStorage.removeItem("isDeveloperAccountLocked");
+        localStorage.removeItem("isAccountLocked");
+        setIsAccountLocked(false);
+        setLoginAttempts(0);
+        logAction("Unlock Accounts", "Unlocked developer and admin accounts");
+        alert("Developer and admin accounts unlocked successfully!");
+      };
+
+      const handleDeleteAdmin = (username) => {
+        if (adminCredentials.length <= 1) {
+          logAction("Failed Delete Admin", "Cannot delete last admin account");
+          alert("Cannot delete the last admin account. At least one admin must remain.");
+          return;
+        }
+        if (window.confirm(`Are you sure you want to delete admin "${username}"?`)) {
+          setAdminCredentials(adminCredentials.filter(cred => cred.username !== username));
+          logAction("Delete Admin", `Deleted admin "${username}"`);
+          alert(`Admin "${username}" deleted successfully!`);
+        }
+      };
+
+      const handleSuspendAdmin = (username, currentStatus) => {
+        if (window.confirm(`Are you sure you want to ${currentStatus ? "unsuspend" : "suspend"} admin "${username}"?`)) {
+          const updatedCredentials = adminCredentials.map(cred =>
+            cred.username === username ? { ...cred, suspended: !currentStatus } : cred
+          );
+          setAdminCredentials(updatedCredentials);
+          logAction(currentStatus ? "Unsuspend Admin" : "Suspend Admin", `${currentStatus ? "Unsuspended" : "Suspended"} admin "${username}"`);
+          alert(`Admin "${username}" ${currentStatus ? "unsuspended" : "suspended"} successfully!`);
+        }
+      };
+
+      const handleViewPost = (post) => {
+        setSelectedPost(post);
+        logAction("View Post", `Viewed post "${post.title}"`);
+      };
+
+      const handleHidePost = (post) => {
+        const updatedPendingPosts = pendingPosts.map(p => 
+          p.id === post.id ? { ...p, hidden: !p.hidden } : p
+        );
+        const updatedPosts = posts.map(p => 
+          p.id === post.id ? { ...p, hidden: !p.hidden } : p
+        );
+        setPendingPosts(updatedPendingPosts);
+        setPosts(updatedPosts);
+        logAction(post.hidden ? "Unhide Post" : "Hide Post", `${post.hidden ? "Unhid" : "Hid"} post "${post.title}"`);
+        alert(`Post "${post.title}" ${post.hidden ? "unhidden" : "hidden"} successfully!`);
+      };
+
+      const handleDeletePost = (post) => {
+        if (window.confirm(`Are you sure you want to delete post "${post.title}"?`)) {
+          setPendingPosts(pendingPosts.filter(p => p.id !== post.id));
+          setPosts(posts.filter(p => p.id !== post.id));
+          setSelectedPost(null);
+          logAction("Delete Post", `Deleted post "${post.title}"`);
+          alert(`Post "${post.title}" deleted successfully!`);
+        }
+      };
+
+      const handleClearAuditLog = () => {
+        if (window.confirm("Are you sure you want to clear all audit logs? This action cannot be undone.")) {
+          setAuditLog([]);
+          logAction("Clear Audit Log", "Cleared all audit logs");
+          alert("Audit logs cleared successfully!");
+        }
+      };
+
+      const handleExport = () => {
+        const data = {
+          posts: JSON.parse(localStorage.getItem("posts")) || [],
+          pendingPosts: JSON.parse(localStorage.getItem("pendingPosts")) || [],
+          adminCredentials: JSON.parse(localStorage.getItem("adminCredentials")) || [],
+          auditLog: JSON.parse(localStorage.getItem("auditLog")) || [],
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "tech-horizon-backup.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        logAction("Export Data", "Exported all site data");
+      };
+
+      const handleImport = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const data = JSON.parse(event.target.result);
+            if (
+              Array.isArray(data.posts) &&
+              Array.isArray(data.pendingPosts) &&
+              Array.isArray(data.adminCredentials) &&
+              Array.isArray(data.auditLog)
+            ) {
+              setPosts(data.posts);
+              setPendingPosts(data.pendingPosts);
+              setAdminCredentials(data.adminCredentials);
+              setAuditLog(data.auditLog);
+              localStorage.setItem("posts", JSON.stringify(data.posts));
+              localStorage.setItem("pendingPosts", JSON.stringify(data.pendingPosts));
+              localStorage.setItem("adminCredentials", JSON.stringify(data.adminCredentials));
+              localStorage.setItem("auditLog", JSON.stringify(data.auditLog));
+              logAction("Import Data", "Imported site data successfully");
+              alert("Data imported successfully!");
+            } else {
+              logAction("Failed Import Data", "Invalid JSON structure");
+              alert("Invalid JSON file structure.");
+            }
+          } catch (err) {
+            logAction("Failed Import Data", `Error: ${err.message}`);
+            alert("Error parsing JSON file.");
+          }
+        };
+        reader.readAsText(file);
+      };
+
+      // Developer Dashboard
+      if (showDeveloperPage) {
+        return (
+          <div className="min-h-screen font-sans">
+            <header className="bg-[#00412d] text-[#e5fcfb] p-3 shadow-md sticky top-0 z-20">
+              <div className="container mx-auto flex justify-between items-center">
+                <div className="header-logo">
+                  <img src="images/The Qlip2.png" alt="Tech Horizon" className="h-16" />
+                </div>
+                <div className="flex items-center space-x-4">
+                  <h2 className="text-xl font-bold">Developer Dashboard</h2>
+                  <span className="text-sm bg-[#007f66] px-2 py-1 rounded-full">Pending Posts: {pendingPosts.length}</span>
+                  <button onClick={handleLogout} className="bg-[#007f66] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#005f4d] transition">Logout</button>
+                </div>
+              </div>
+            </header>
+            <div className="container mx-auto p-6">
+              {/* Pending Posts */}
+              <div className="mt-6">
+                <h3 className="text-2xl font-semibold text-[#00412d] mb-4">Pending Posts</h3>
+                <ul className="bg-[#e0fdf8] p-6 rounded-lg shadow-lg">
+                  {pendingPosts.filter(post => post.status === "pending").map(post => (
+                    <li key={post.id} className="text-[#115e57] mb-4 flex items-center justify-between">
+                      <div>
+                        <span className="font-semibold">{post.title} ({post.category})</span>
+                        {post.media && (
+                          <div className="mt-2 mb-2">
+                            {post.media.match(/\.(mp4|webm|ogg)$/i) ? (
+                              <video src={post.media} controls className="w-32 h-32 object-cover rounded-lg" />
+                            ) : (
+                              <img src={post.media} alt={post.title} className="auto-fit-image-small" />
+                            )}
+                          </div>
+                        )}
+                        <p className="text-[#115e57] mt-2 preserve-whitespace">{post.excerpt}</p>
+                        <p className="text-sm">{post.date}</p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleApprovePost(post)}
+                          className="bg-[#00412d] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#007f66] transition"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleRejectPost(post)}
+                          className="bg-red-500 text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                  {pendingPosts.filter(post => post.status === "pending").length === 0 && (
+                    <p className="text-[#115e57]">No pending posts yet.</p>
+                  )}
+                </ul>
+              </div>
+
+              {/* Post Management */}
+              <div className="mt-6">
+                <h3 className="text-2xl font-semibold text-[#00412d] mb-4">Post Management</h3>
+                <ul className="bg-[#e0fdf8] p-6 rounded-lg shadow-lg">
+                  {[...pendingPosts, ...posts].map(post => (
+                    <li key={post.id} className="text-[#115e57] mb-4 flex items-center justify-between">
+                      <div>
+                        <span className="font-semibold">{post.title} ({post.category}) {post.hidden && <span className="text-red-500">[Hidden]</span>}</span>
+                        {post.status && <span className="text-sm ml-2">({post.status})</span>}
+                        {selectedPost && selectedPost.id === post.id && (
+                          <div className="mt-2">
+                            {post.media && (
+                              <div className="mb-2">
+                                {post.media.match(/\.(mp4|webm|ogg)$/i) ? (
+                                  <video src={post.media} controls className="w-32 h-32 object-cover rounded-lg" />
+                                ) : (
+                                  <img src={post.media} alt={post.title} className="auto-fit-image-small" />
+                                )}
+                              </div>
+                            )}
+                            <p className="text-[#115e57] preserve-whitespace">{post.excerpt}</p>
+                            <p className="text-sm">{post.date}</p>
+                            <button
+                              onClick={() => setSelectedPost(null)}
+                              className="mt-2 text-[#007f66] hover:underline"
+                            >
+                              Close View
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleViewPost(post)}
+                          className="bg-[#007f66] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#005f4d] transition"
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={() => handleHidePost(post)}
+                          className="bg-yellow-500 text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-yellow-700 transition"
+                        >
+                          {post.hidden ? "Unhide" : "Hide"}
+                        </button>
+                        <button
+                          onClick={() => handleDeletePost(post)}
+                          className="bg-red-500 text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                  {pendingPosts.length + posts.length === 0 && (
+                    <p className="text-[#115e57]">No posts available.</p>
+                  )}
+                </ul>
+              </div>
+
+              {/* Account Management */}
+              <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Add New Admin */}
+                <div>
+                  <h3 className="text-xl font-semibold text-[#00412d] mb-4">Add New Admin</h3>
+                  <form onSubmit={handleAddAdmin} className="bg-[#e0fdf8] p-6 rounded-lg shadow-lg">
+                    <div className="mb-4">
+                      <label className="block text-[#00412d] font-medium mb-1">New Admin Username</label>
+                      <input
+                        type="text"
+                        value={newAdminUsername}
+                        onChange={(e) => setNewAdminUsername(e.target.value)}
+                        placeholder="Enter username"
+                        className="w-full p-3 border border-[#007f66] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007f66] transition"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-[#00412d] font-medium mb-1">New Admin Password</label>
+                      <input
+                        type="password"
+                        value={newAdminPassword}
+                        onChange={(e) => setNewAdminPassword(e.target.value)}
+                        placeholder="Enter password"
+                        className="w-full p-3 border border-[#007f66] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007f66] transition"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-[#00412d] font-medium mb-1">Permissions</label>
+                      <div className="flex flex-col space-y-2">
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            name="permissions"
+                            value="create_posts"
+                            className="mr-2 accent-[#007f66]"
+                          />
+                          Create Posts
+                        </label>
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            name="permissions"
+                            value="publish_posts"
+                            className="mr-2 accent-[#007f66]"
+                          />
+                          Publish Posts
+                        </label>
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        className="bg-[#00412d] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#007f66] transition"
+                      >
+                        Add Admin
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                {/* Change Developer Password */}
+                <div>
+                  <h3 className="text-xl font-semibold text-[#00412d] mb-4">Change Developer Password</h3>
+                  <form onSubmit={handleChangeDeveloperPassword} className="bg-[#e0fdf8] p-6 rounded-lg shadow-lg">
+                    <div className="mb-4">
+                      <label className="block text-[#00412d] font-medium mb-1">New Password</label>
+                      <input
+                        type="password"
+                        value={developerNewPassword}
+                        onChange={(e) => setDeveloperNewPassword(e.target.value)}
+                        placeholder="Enter new password"
+                        className="w-full p-3 border border-[#007f66] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007f66] transition"
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        className="bg-[#00412d] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#007f66] transition"
+                      >
+                        Change Password
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                {/* Change Admin Password */}
+                <div>
+                  <h3 className="text-xl font-semibold text-[#00412d] mb-4">Change Admin Password</h3>
+                  <form onSubmit={handleChangeAdminPassword} className="bg-[#e0fdf8] p-6 rounded-lg shadow-lg">
+                    <div className="mb-4">
+                      <label className="block text-[#00412d] font-medium mb-1">Admin Username</label>
+                      <input
+                        type="text"
+                        value={adminChangeUsername}
+                        onChange={(e) => setAdminChangeUsername(e.target.value)}
+                        placeholder="Enter admin username"
+                        className="w-full p-3 border border-[#007f66] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007f66] transition"
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-[#00412d] font-medium mb-1">New Password</label>
+                      <input
+                        type="password"
+                        value={adminNewPassword}
+                        onChange={(e) => setAdminNewPassword(e.target.value)}
+                        placeholder="Enter new password"
+                        className="w-full p-3 border border-[#007f66] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007f66] transition"
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        className="bg-[#00412d] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#007f66] transition"
+                      >
+                        Change Password
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              {/* Manage Admin Accounts */}
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-[#00412d] mb-4">Manage Admin Accounts</h3>
+                <div className="bg-[#e0fdf8] p-6 rounded-lg shadow-lg">
+                  <table className="w-full text-[#115e57]">
+                    <thead>
+                      <tr className="border-b border-[#007f66]">
+                        <th className="text-left p-2">Username</th>
+                        <th className="text-left p-2">Permissions</th>
+                        <th className="text-left p-2">Created At</th>
+                        <th className="text-left p-2">Status</th>
+                        <th className="text-left p-2">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {adminCredentials.map(cred => (
+                        <tr key={cred.username} className="border-b border-[#007f66]">
+                          <td className="p-2">{cred.username}</td>
+                          <td className="p-2">{cred.permissions?.join(", ") || "none"}</td>
+                          <td className="p-2">{cred.createdAt}</td>
+                          <td className="p-2">{cred.suspended ? "Suspended" : "Active"}</td>
+                          <td className="p-2 flex space-x-2">
+                            <button
+                              onClick={() => handleDeleteAdmin(cred.username)}
+                              className="bg-red-500 text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                            >
+                              Delete
+                            </button>
+                            <button
+                              onClick={() => handleSuspendAdmin(cred.username, cred.suspended)}
+                              className="bg-yellow-500 text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-yellow-700 transition"
+                            >
+                              {cred.suspended ? "Unsuspend" : "Suspend"}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {adminCredentials.length === 0 && (
+                        <tr>
+                          <td colSpan="5" className="p-2 text-center">No admin accounts available.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Audit Log */}
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-[#00412d] mb-4">Audit Log</h3>
+                <div className="bg-[#e0fdf8] p-6 rounded-lg shadow-lg">
+                  <div className="audit-log-table">
+                    <table className="w-full text-[#115e57]">
+                      <thead>
+                        <tr className="border-b border-[#007f66]">
+                          <th className="text-left p-2">Date</th>
+                          <th className="text-left p-2">Action</th>
+                          <th className="text-left p-2">Details</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {auditLog.map((log, index) => (
+                          <tr key={index} className="border-b border-[#007f66]">
+                            <td className="p-2">{log.date}</td>
+                            <td className="p-2">{log.action}</td>
+                            <td className="p-2">{log.details}</td>
+                          </tr>
+                        ))}
+                        {auditLog.length === 0 && (
+                          <tr>
+                            <td colSpan="3" className="p-2 text-center">No audit logs available.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <button
+                      onClick={handleClearAuditLog}
+                      className="bg-red-500 text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                    >
+                      Clear Logs
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Export/Import Data */}
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-[#00412d] mb-4">Export/Import Data</h3>
+                <div className="bg-[#e0fdf8] p-6 rounded-lg shadow-lg">
+                  <div className="flex space-x-4">
+                    <button
+                      onClick={handleExport}
+                      className="bg-[#00412d] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#007f66] transition"
+                    >
+                      Export Data
+                    </button>
+                    <label className="bg-[#007f66] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#005f4d] transition cursor-pointer">
+                      Import Data
+                      <input
+                        type="file"
+                        accept=".json"
+                        onChange={handleImport}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Unlock Accounts */}
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold text-[#00412d] mb-4">Unlock Accounts</h3>
+                <div className="bg-[#e0fdf8] p-6 rounded-lg shadow-lg">
+                  <button
+                    onClick={handleUnlockAccount}
+                    className="bg-[#00412d] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#007f66] transition"
+                  >
+                    Unlock Developer & Admin Accounts
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // Login Modal
+      return (
+        <div className="min-h-screen font-sans flex items-center justify-center">
+          <div className="bg-[#e0fdf8] p-8 rounded-lg shadow-xl w-full max-w-md">
+            <div className="header-logo mb-6 text-center">
+              <img src="images/The Qlip2.png" alt="Tech Horizon" className="h-16 mx-auto" />
+            </div>
+            <h2 className="text-2xl font-bold text-[#00412d] mb-6 text-center">Developer Login</h2>
+            <input
+              type="text"
+              value={developerUsername}
+              onChange={(e) => setDeveloperUsername(e.target.value)}
+              placeholder="Username"
+              className="w-full p-3 mb-4 border border-[#007f66] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007f66] transition"
+              disabled={isAccountLocked}
+            />
+            <input
+              type="password"
+              value={developerPassword}
+              onChange={(e) => setDeveloperPassword(e.target.value)}
+              placeholder="Password"
+              className="w-full p-3 mb-6 border border-[#007f66] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007f66] transition"
+              disabled={isAccountLocked}
+            />
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={handleDeveloperLogin}
+                className="bg-[#00412d] text-[#e5fcfb] px-6 py-3 rounded-lg hover:bg-[#007f66] transition disabled:bg-gray-400"
+                disabled={isAccountLocked}
+              >
+                Login
+              </button>
+              <a
+                href="index.html"
+                className="bg-[#e0fdf8] text-[#115e57] px-6 py-3 rounded-lg border border-[#007f66] hover:bg-[#007f66] hover:text-[#e5fcfb] transition"
+              >
+                Back to Home
+              </a>
+            </div>
+            {isAccountLocked && (
+              <div className="mt-4 text-center">
+                <p className="text-red-500 mb-2">Account is locked due to multiple failed attempts.</p>
+                <button
+                  onClick={handleUnlockAccount}
+                  className="bg-[#00412d] text-[#e5fcfb] px-4 py-2 rounded-lg hover:bg-[#007f66] transition"
+                >
+                  Unlock Account
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<DeveloperApp />, document.getElementById('root'));
+  </script>
+</body>
+</html>
+```

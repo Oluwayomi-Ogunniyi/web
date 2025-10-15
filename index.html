@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="The Qlip provides innovative tech solutions including website development, automation, and IT consultancy."/>
+  <title>The Qlip</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+     (function(){
+        emailjs.init({
+          publicKey: "DVlpv6WkJuRl2RWLZ",
+        });
+     })();
+  </script>
+</head>
+
+<body>
+  <noscript>
+  <div style="background: #fff3cd; padding: 1em; text-align: center; font-size: 0.95em;">
+    <strong>Notice:</strong> This site requires JavaScript for full functionality. Please enable it in your browser.
+  </div>
+</noscript>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-logo">
+      <img src="images/The Qlip.png" alt="The Qlip" class="logo-image" />
+    </div>
+    <nav>
+      <ul>
+        <li>
+          <a href="AboutPage.html">About Us  </a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" aria-expanded="false">Products<span class="arrow">&#9662;</span></a>
+          <ul class="dropdown-menu">
+            <li><a href="WebsiteTemplate.html">Website Templates</a></li>
+            <li><a href="WebsiteBuilder.html">Website Builder</a></li>
+            <li><a href="WebsiteDesign.html">Website Design</a></li>
+            <li><a href="WebsiteHosting.html">Web Hosting</a></li>
+            <li><a href="DomainName.html">Domain Names</a></li>
+            <li><a href="WebsiteAccessibility.html">Website Accessibility</a></li>
+            <li><a href="GraphicDesign.html">Graphic Design</a></li>
+            <li><a href="MotionGraphics.html">Motion Graphics</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" aria-expanded="false">Contacts<span class="arrow">&#9662;</span></a>
+          <ul class="dropdown-menu">
+            <li><a href="Contactpage.html">Contact Us</a></li>
+            <li><a href="https://wa.me/2347087342882">Chat With a Live Person</a></li>
+          </ul>
+        </li>
+        <li><button class="cta-button">Get Started</button></li>
+      </ul>
+    </nav>
+
+    <!-- Hamburger Icon -->
+    <div class="hamburger" id="hamburger">
+      <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+      <div class="close-menu" id="closeMenu">
+        <i class="fas fa-times"></i>
+      </div>
+      <ul>
+        <li><a href="index.html">Home <span class="dot">&#8226;</span></a></li>
+        <li><a href="AboutPage.html">About Us</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle">Products<span class="arrow">&#9662;</span></a>
+          <ul class="dropdown-menu">
+            <li><a href="WebsiteTemplate.html">Website Templates</a></li>
+            <li><a href="WebsiteBuilder.html">Website Builder</a></li>
+            <li><a href="WebsiteDesign.html">Website Design</a></li>
+            <li><a href="WebsiteHosting.html">Web Hosting</a></li>
+            <li><a href="DomainName.html">Domain Names</a></li>
+            <li><a href="WebsiteAccessibility.html">Website Accessibility</a></li>
+            <li><a href="GraphicDesign.html">Graphic Design</a></li>
+            <li><a href="MotionGraphics.html">Motion Graphics</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle">Contacts<span class="arrow">&#9662;</span></a>
+          <ul class="dropdown-menu">
+            <li><a href="Contactpage.html">Contact Us</a></li>
+            <li><a href="https://wa.me/2347087342882">Chat With a Live Person</a></li>
+          </ul>
+        </li>
+        <li><button class="cta-button" id="getStartedBtnMobile">Get Started</button></li>
+      </ul>
+      <div class="follow-us">
+        <h4> Or connect via. </h4>
+      </div>
+      <!-- Social Media Icons -->
+      <div class="mobile-social-icons">
+        <a href="tel:+2348156007282" target="_blank"><i class="fas fa-phone-alt"></i></a>
+        <a href="https://wa.me/2347087342882" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://tiktok.com/@the_qlip" target="_blank"><i class="fab fa-tiktok"></i></a>
+        <a href="mailto:theqlipglobal@gmail.com" target="_blank"><i class="fas fa-envelope"></i></a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+ <section class="hero"> 
+  <video autoplay muted loop playsinline class="hero-video">
+    <source src="images/Tech002.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Empowering the Future with Tech</h1>
+    <p>Transforming Ideas into Digital Excellence.</p>
+    <button id="playVideoBtn" class="cta-hero-button-secondary">Watch Intro Video</button>
+  </div>
+</section>
+
+<!-- VIDEO MODAL -->
+<div id="videoModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <div class="video-wrapper">
+      <iframe id="videoFrame" width="100%" height="315"
+              src="" frameborder="0"
+              allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+  <!-- POWERED BY -->
+  <section class="powered-by">
+    <h3>Powered By</h3>
+    <div class="powered-logos">
+      <a href="https://www.google.com" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google Logo" />
+      </a>
+      <a href="https://www.tawk.to" target="_blank">
+        <img src="images/tawk.png" alt="Tawk.to Logo" />
+      </a>
+      <a href="https://www.emailjs.com" target="_blank">
+        <img src="images/emailjs.jpg" alt="EmailJS Logo" />
+      </a>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="About">
+    <h2>Meet Us</h2>
+    <p>
+      Our team of experts is passionate about crafting stunning websites, delivering high-quality multimedia content,
+       providing strategic IT consultancy, and equipping learners with in-demand tech skills. 
+       We blend creativity with technology to drive growth, enhance efficiency, and accelerate digital transformation.
+    </p>
+    <a href="AboutPage.html" class="meet-us" id="MeetUsInfo">More</a>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services" id="services">
+    <h1>Our Services</h1>
+    <div class="service-container">
+      <div class="card"><div class="service-box">
+        <h3>Software Engineering.</h3>
+        <p>Designing, Developing, and Maintaining Scalable Software Solutions Tailored to Business Needs.</p>
+        <button class="more-info" data-info="Software-Engineering">Read More</button>
+      </div></div>
+
+      <div class="card"><div class="service-box">
+        <h3>System Testing & IT Support.</h3>
+        <p>Ensuring Software Reliability Through Thorough Testing and Providing Technical Assistance to Maintain Seamless IT Operations.</p>
+        <button class="more-info" data-info="System-Testing-&-IT-Support">Read More</button>
+      </div></div>
+
+      <div class="card"><div class="service-box">
+        <h3>Multimedia Solutions.</h3>
+        <p>Bringing Stories to Life Through Visual Innovation.</p>
+        <button class="more-info" data-info="Multimedia-Solutions">Read More</button>
+      </div></div>
+
+      <div class="card"><div class="service-box">
+        <h3>Digital Experience.</h3>
+        <p>Crafting User-Centric Digital Solutions, Including Web and Mobile Interfaces, to Enhance Customer Engagement and Satisfaction.</p>
+        <button class="more-info" data-info="Digital-Experience">Read More</button>
+      </div></div>
+
+      <div class="card"><div class="service-box">
+        <h3>Cybersecurity & Data Protection.</h3>
+        <p>Safeguarding Your Digital Assets with Proactive Defense.</p>
+        <button class="more-info" data-info="Cybersecurity-&-Data-Protection">Read More</button>
+      </div></div>
+
+      <div class="card"><div class="service-box">
+        <h3>AI & Robotics.</h3>
+        <p>Leveraging Artificial Intelligence and Automation Technologies to Drive Innovation, Efficiency, and Intelligent Decision-Making.</p>
+        <button class="more-info" data-info="AI-&-Robotics">Read More</button>
+      </div></div>
+
+      <div class="card"><div class="service-box">
+        <h3>Training & Consultancy.</h3>
+        <p>Offering Expert Guidance and Tailored Training Programs to Enhance Skills and Improve Business Strategies.</p>
+        <button class="more-info" data-info="Training-&-Consultancy">Read More</button>
+      </div></div>
+
+      <div class="card"><div class="service-box">
+        <h3>Enterprise Solutions.</h3>
+        <p>Providing Integrated IT Solutions, Including Cloud Computing and Cybersecurity, to Optimize Business Operations and Security.</p>
+        <button class="more-info" data-info="Enterprise-Solutions">Read More</button>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- Bookshop Section -->
+  <section class="books" id="bookshop">
+    <div class="container">
+      <h2>Explore Our Bookshop</h2>
+      <p>
+        Access carefully curated eBooks to strengthen your mindset and grow digital skills in Microsoft Office, Web Development etc.
+      </p>
+      <a href="Bookshop.html" class="bookshop-btn">Visit Bookshop</a>
+    </div>
+  </section>
+
+<!-- NEW CONTACT SECTION -->
+<section class="Contact" id="contact">
+  <div class="contact-container">
+    <div class="contact-info">
+      <h3>Contact Us</h3>
+      <p>Phone: +2349060868150 / +2347087342882</p>
+      <p>Email: <a href="mailto:theqlipglobal@gmail.com">theqlipglobal@gmail.com</a></p>
+      <a href="blog.html" class="blog-btn">Visit Our Blog</a>
+    </div>
+    <div class="tools">
+      <h3>Our Tools</h3>
+      <ul>
+        <a href="CVBuilder.html"><li data-tooltip="Input details to generate a modern, ATS-friendly CV.">CV Builder</li></a>
+        <a href="furnituresmarttools.html"><li data-tooltip="Furniture Assist Tools.">Furniture Smart Tools</li></a>
+        <a href="priceestimator.html"><li data-tooltip="Price Estimate.">Price Estimator</li></a>
+        <a href="invoicegenerator.html"><li data-tooltip="Generate Your Digital Invoice.">DIgital Invoice Generator</li></a>
+        <li data-tooltip="Access reusable code for developers.">Code Snippet Library</li>
+      </ul>
+    </div>
+      <div class="social-media">
+      <h3>Connect With Us</h3>
+      <div class="social-icons">
+        <a href="tel:+2348156007282" target="_blank" title="Call Us"><i class="fas fa-phone-alt"></i></a>
+        <a href="https://wa.me/2347087342882" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://tiktok.com/@the_qlip" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+        <a href="mailto:theqlipglobal@gmail.com" target="_blank" title="Email Us"><i class="fas fa-envelope"></i></a>
+      </div>
+      <div class="share-buttons">
+        <span class="blog-btn share-static">Share Us</span>
+        <div class="share-icons">
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://theqlip.digital" target="_blank" title="Share on Facebook" class="share-icon facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/?url=https://theqlip.digital" target="_blank" title="Share on Instagram" class="share-icon instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://twitter.com/intent/tweet?url=https://theqlip.digital&text=Check%20out%20this%20awesome%20blog%20from%20The%20Qlip!" target="_blank" title="Share on Twitter" class="share-icon twitter"><i class="fab fa-twitter"></i></a>
+          <a href="https://www.tiktok.com/upload?redirect_url=https://theqlip.digital" target="_blank" title="Share on TikTok" class="share-icon tiktok"><i class="fab fa-tiktok"></i></a>
+          <a href="https://t.me/share/url?url=https://theqlip.digital&text=Check%20out%20this%20awesome%20blog%20from%20The%20Qlip!" target="_blank" title="Share on Telegram" class="share-icon telegram"><i class="fab fa-telegram-plane"></i></a>
+          <a href="https://wa.me/?text=Check%20out%20this%20awesome%20blog%20from%20The%20Qlip!%20https://theqlip.digital" target="_blank" title="Share on WhatsApp" class="share-icon whatsapp"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2025 The Qlip. All rights reserved.</p>
+  </footer>
+
+  <!-- GET STARTED MODAL -->
+  <div id="getStartedModal" class="modal">
+  <div class="modal-content get-started-body">
+    <span class="close-button get-started-close">&times;</span>
+    <h2>Welcome!</h2>
+    <form id="get-started-form">
+      <div class="form-group"><input type="text" name="user_name" placeholder="Full Name" required></div>
+      <div class="form-group"><input type="email" name="user_email" placeholder="Email Address" required></div>
+      <div class="form-group">
+        <select name="project_type" required>
+          <option value="">Select Project Type</option>
+          <option value="Website Development">Web Development</option>
+          <option value="Cybersecurity">Cybersecurity</option>
+          <option value="UI/UX Design">UI/UX Design</option>
+          <option value="Multimedia">Multimedia</option>
+          <option value="Branding">Branding</option>
+          <option value="Business Automation / AI Integration">Business Automation / AI Integration</option>
+          <option value="Virtual Assistance">Virtual Assistance</option>
+          <option value="Educational / Training">Training / Mentorship</option>
+          <option value="Consultancy">Consultancy</option>
+        </select>
+      </div>
+      <div class="form-group"><input type="text" name="budget" placeholder="Contact No" required></div>
+      <div class="form-group"><textarea name="message" placeholder="Tell us about your idea..." rows="4" required></textarea></div>
+      <button type="submit" class="cta-button">Submit</button>
+    </form>
+  </div>
+  <script type="text/javaScript" src="script.js"></script>
+</div>
+
+  <!-- INLINE SCRIPT TO SUPPORT FIXES -->
+  <script>
+    // Get Started Modal
+    const getStartedModal = document.getElementById('getStartedModal');
+    const getStartedBtn = document.querySelector('.cta-button');
+    const getStartedClose = document.querySelector('.get-started-close');
+
+    getStartedBtn.addEventListener('click', () => getStartedModal.style.display = 'block');
+    getStartedClose.addEventListener('click', () => getStartedModal.style.display = 'none');
+    window.addEventListener('click', (e) => {
+      if (e.target === getStartedModal) getStartedModal.style.display = 'none';
+    });
+
+    // Feedback Modal
+    const feedbackLink = document.getElementById('feedback-link');
+    const feedbackModal = document.getElementById('feedbackModal');
+    const closeFeedbackButton = document.querySelector('.close-feedback-button');
+    const feedbackForm = document.getElementById('feedback-form');
+
+    feedbackLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      feedbackModal.style.display = 'block';
+    });
+    closeFeedbackButton.addEventListener('click', () => feedbackModal.style.display = 'none');
+    window.addEventListener('click', (e) => {
+      if (e.target === feedbackModal) feedbackModal.style.display = 'none';
+    });
+
+    feedbackForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      emailjs.sendForm("service_grblnof", "template_vw26jo9", this)
+        .then(() => {
+          alert('Thank you for your feedback! We appreciate your input.');
+          feedbackForm.reset();
+          feedbackModal.style.display = 'none';
+        }, () => {
+          alert('Oops! Something went wrong. Please try again.');
+        });
+    });
+
+    // More Info Modal
+    const infoModal = document.getElementById('infoModal');
+    const infoText = document.getElementById('infoText');
+    const infoClose = document.querySelector('.info-close');
+    const moreInfoButtons = document.querySelectorAll('.more-info');
+
+    moreInfoButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const infoType = button.dataset.info;
+        infoText.textContent = `Detailed information about: ${infoType.replace(/-/g, ' ')}`;
+        infoModal.style.display = 'block';
+      });
+    });
+
+    infoClose.addEventListener('click', () => infoModal.style.display = 'none');
+    window.addEventListener('click', (e) => {
+      if (e.target === infoModal) infoModal.style.display = 'none';
+    });
+  </script>
+  <script>
+  function closeMenu() {
+    const menu = document.querySelector(".hamburger-menu");
+    menu.style.right = "-100%"; // hide off-screen
+    // Also toggle any class you're using to control visibility
+    menu.classList.remove("open");
+  }
+</script>
+
+<script>
+    // ------------------ MOBILE MENU ------------------
+const hamburger = document.getElementById("hamburger");
+const mobileMenu = document.getElementById("mobile-menu");
+const closeMenu = document.getElementById("closeMenu");
+
+function updateMenuVisibility() {
+  if (window.innerWidth > 1024) {
+    mobileMenu.classList.remove("active");
+    hamburger.style.display = "none";
+  } else {
+    hamburger.style.display = "block";
+  }
+}
+
+hamburger?.addEventListener("click", () => {
+  if (window.innerWidth <= 1024) {
+    mobileMenu.classList.add("active");
+    hamburger.style.display = "none";
+  }
+});
+
+closeMenu?.addEventListener("click", () => {
+  mobileMenu.classList.remove("active");
+  hamburger.style.display = "block";
+});
+
+window.addEventListener("click", (e) => {
+  if (!mobileMenu.contains(e.target) && !hamburger.contains(e.target)) {
+    mobileMenu.classList.remove("active");
+    hamburger.style.display = "block";
+  }
+});
+
+window.addEventListener("resize", updateMenuVisibility);
+updateMenuVisibility(); // Initial call
+
+function updateMenuVisibility() {
+  console.log("Width:", window.innerWidth);
+  if (window.innerWidth > 1024) {
+    mobileMenu.classList.remove("active");
+    hamburger.style.display = "none";
+    console.log("Desktop mode: Menu hidden");
+  } else {
+    hamburger.style.display = "block";
+    console.log("Mobile mode: Hamburger shown");
+  }
+}
+</script>
+
+</body>
+<nav role="navigation" aria-label="Main navigation"></nav>
+</html>

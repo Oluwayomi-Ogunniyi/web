@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>About The Qlip</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  background: #002e22;
+  color: #222;
+  line-height: 1.7;
+}
+
+.about-container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 2em 1.5em;
+}
+
+.about-header {
+  text-align: center;
+  margin-bottom: 2em;
+}
+
+.about-header h1 {
+  font-size: 2.8em;
+  color: #e5fcfb; /* Calm sea green */
+}
+
+.about-header p {
+  font-size: 1.2em;
+  color: #e5fcfb;
+}
+
+.section-block-brand-identity {
+    color: #e0fdf8;
+}
+.about-image {
+  width: 100%;
+  max-width: 900px;
+  display: block;
+  margin: 2em auto;
+  border-radius: 16px;
+  background: url(images/About4.jpg) no-repeat center 65% / cover;
+  box-shadow: 0 8px 20px hsl(167, 97%, 44%);
+  padding-top: 5%;
+  padding-bottom: 3%;
+}
+
+.Reach-container {
+  background: #e0fdf8;
+  color: #00412d;
+  padding: 30px 20px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  border-top: 2px solid #00412d;
+  box-shadow: 0 -3px 8px rgba(0, 65, 45, 0.2);
+  border-radius: 0;
+  margin-bottom: -10px;
+  margin-top: -10px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .about-image {
+    height: 25px;
+    margin: 1.5em auto;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-image {
+    height: 25px;
+    margin: 1em auto;
+    border-radius: 10px;
+  }
+}
+
+.section-block {
+  margin-bottom: 3em;
+}
+
+.section-block h2 {
+  font-size: 1.8em;
+  color: #e5fcfb;
+  margin-bottom: 0.5em;
+}
+
+.section-block p {
+  font-size: 1.05em;
+  color: #115e57;
+}
+
+.highlight {
+  background: #e0fdf8;
+  border-left: 5px solid #00cc99;
+  padding: 1em;
+  border-radius: 8px;
+  margin: 1.5em 0;
+  color: #111;
+}
+
+.problem, .solution {
+  background: #e0fdf8;
+  border: 1px solid #ddd;
+  padding-top: 0px;
+  padding-right: 8px;
+  padding-left: 8px;
+  border-radius: 12px;
+  box-shadow: 0 6px 13px hsl(167, 97%, 44%);
+}
+
+.problem1 {
+  margin-top: -10px;
+  padding-bottom: 20px;
+  color: #111;
+  background: #e0fdf8;
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+.problem h3, .solution h3 {
+  color: #b30000; /* Brick red */
+  font-size: 1.5em;
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+.solution h3 {
+  color: #008000; /* Deep green */
+  background: #e0fdf8;
+  padding-left: 20px;
+  margin-bottom: -10px;
+}
+
+
+.solution1 {
+  color: #111;
+  background: #e0fdf8;
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+.solution2 {
+  color: #111;
+  background: #e0fdf8;
+  padding-bottom: 20px;
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.solution3 {
+  color: #111;
+  background: #e0fdf8;
+  padding-bottom: 0px;
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+.framework {
+font-size: medium;
+font-style: normal;
+padding-right: 20px;
+padding-left: 50px;
+}
+
+.framework1 {
+font-size: medium;
+font-style: normal;
+padding-top: 10px;
+padding-right: 20px;
+padding-left: 50px;
+}
+
+.framework2 {
+font-size: medium;
+font-style: normal;
+padding-bottom: 10px;
+padding-right: 20px;
+padding-left: 50px;
+}
+
+.dot {
+  margin-right: 0px; /* Adjust the value as needed */
+  margin-left: 0px;
+  padding-right: 20px;
+  padding-left: 0px;
+}
+
+
+.Reach {
+  color: #000;
+  margin-top: -40px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: -30px;
+  margin-bottom: -30px;
+}
+
+.social-icons a {
+  font-size: 28px;
+  transition: transform 0.3s ease;
+  text-decoration: none;
+}
+
+.social-icons a:hover {
+  transform: scale(1.2);
+}
+
+.social-icons .call { color: #008080; }
+.social-icons .whatsapp { color: #25D366; }
+.social-icons .tiktok { color: #0d0d0d; }
+.social-icons .email { color: #007f66; }
+
+@media (max-width: 768px) {
+  .about-header h1 {
+    font-size: 2em;
+  }
+}
+.home-icon {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  font-size: 24px;
+  color: #e0fdf8;
+  background-color: #00412d;
+  padding: 10px 12px;
+  border-radius: 50%;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.home-icon:hover {
+  transform: scale(1.1);
+  background-color: #007f66;
+}
+
+  </style>
+</head>
+<body>
+
+  <a href="index.html" class="home-icon" aria-label="Back to Home">
+    <i class="fas fa-home"></i>
+  </a>
+  <section class="about-container">
+    <div class="about-header">
+      <h1>About The Qlip</h1>
+      <p>Empowering digital excellence with creativity, strategy, and innovation.</p>
+    </div>
+
+    <div class="about-image" aria-label="The Qlip"></div>
+
+    <div class="section-block brand-identity">
+      <h2>Our Brand Identity</h2>
+      <div class="section-block-brand-identity">
+        <strong>The Qlip</strong> is more than just a tech company — it's a movement. We represent a fusion of innovation, design, and smart problem-solving. Our brand stands for clarity, precision, and futuristic creativity, delivering results that make digital dreams a reality.
+      </div>
+    </div>
+
+    <div class="section-block vision">
+      <h2>Our Vision</h2>
+      <div class="highlight">
+        To become a nationwide catalyst for digital transformation, where every student, graduate, and working professional is empowered with essential tech skills, equipped to compete globally, and inspired to lead in a technology-driven future.
+        We envision a tech-literate Nigeria where digital fluency is the norm — not the exception.
+      </div>
+    </div>
+
+    <div class="section-block mission">
+      <h2>Our Mission</h2>
+      <div class="section-block-brand-identity">
+        At <strong>The Qlip</strong>, our mission is to eradicate tech illiteracy by providing accessible, practical, and hands-on digital training to students, graduates, and professionals.
+      </div>
+    </div>
+
+    <div class="section-block problem">
+      <h3>The Problem We Identified</h3>
+      <div class="problem1">
+        Despite the growing demand for digital skills in the modern workforce, research reveals that 85–90% of Nigerian graduates lack proficiency in basic Microsoft Office tools, including PowerPoint — tools that represent the most foundational level of digital competence. This points to a deep-rooted issue of technological illiteracy in our educational system and society at large. Many young professionals are leaving school unequipped for the realities of today’s digital workplace, limiting their opportunities and contributing to a cycle of underdevelopment.
+      </div>
+    </div>
+
+    <section class="section-block solution">
+    <h3>Our Solution</h3>
+    <h5></h5>
+
+    <div class="solution1">
+      At <strong>The Qlip</strong>, we believe that solving tech illiteracy requires intentional, grassroots, and scalable action. That’s why our approach focuses on accessibility, collaboration, and practical learning experiences that meet learners where they are, in schools, communities, and online.
+    </div>
+
+    <div class="solution3">We offer a comprehensive digital empowerment framework built on the following pillars:</div>
+
+    <div class="framework1">
+      <span class="dot">&#8226;</span><strong>Curriculum Integration:</strong> We work with schools and institutions to embed Microsoft Office and foundational tech skills into academic programs, ensuring students graduate with relevant digital competence.
+    </div>
+
+    <div class="framework">
+      <span class="dot">&#8226;</span><strong>Community-Based Training:</strong> Through local bootcamps, workshops, and outreach programs, we bring digital literacy directly to underserved neighborhoods and youth centers.
+    </div>
+
+    <div class="framework">
+      <span class="dot">&#8226;</span><strong>Online & Offline Learning Access:</strong> We develop mobile-friendly platforms and offline toolkits that allow learners to access digital skills training anytime, anywhere — with or without internet.
+    </div>
+
+    <div class="framework">
+      <span class="dot">&#8226;</span><strong>Tech Empowerment Clubs:</strong> We establish and support on-campus clubs that promote peer learning, guided practice, and student-led digital innovation.
+    </div>
+
+    <div class="framework">
+      <span class="dot">&#8226;</span><strong>Final-Year Tech Readiness Programs:</strong> We prepare graduates for the workplace through targeted training in Microsoft Word, Excel, PowerPoint, and other essential tools.
+    </div>
+
+    <div class="framework">
+      <span class="dot">&#8226;</span><strong>Trainer Development:</strong> By training teachers, volunteers, and community leaders, we multiply our impact and ensure sustainability in every location we reach.
+    </div>
+
+    <div class="framework">
+      <span class="dot">&#8226;</span><strong>Incentivized and Gamified Learning:</strong> Our programs are designed to be interactive and engaging, offering recognition, rewards, and real-life applications that keep learners motivated.
+    </div>
+
+    <div class="framework2">
+      <span class="dot">&#8226;</span><strong>Corporate and Institutional Partnerships:</strong> We collaborate with companies, NGOs, and educational stakeholders to expand our reach, deliver certified training, and bridge the digital divide together.
+    </div>
+    <div class="solution2">
+      With this holistic approach, we are building a tech-literate generation equipped to thrive in today’s digital world — one empowered student, graduate, and professional at a time.</div>
+  </section>
+
+  <section class="Reach-container">
+     <div class="Reach">
+    <h5><strong>For Partnership or Sponsorship, Reach Out on Your Preferred Platform:</strong></h5>
+    </div>
+    <div class="social-icons">
+      <a href="https://wa.me/2347087342882" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://tiktok.com/@the_qlip" target="_blank" class="tiktok"><i class="fab fa-tiktok"></i></a>
+      <a href="mailto:theqlipglobal@gmail.com" class="email"><i class="fas fa-envelope"></i></a>
+    </div>
+  </section>
+
+</body>
+</html>
